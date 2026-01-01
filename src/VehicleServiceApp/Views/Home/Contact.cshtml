@@ -1,0 +1,111 @@
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold"><i class="bi bi-telephone me-2"></i>İletişim</h1>
+            <p class="lead text-muted">Bizimle iletişime geçmek için aşağıdaki formu kullanabilirsiniz.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt text-primary me-2"></i>Adres</h5>
+                        <p class="text-muted">
+                            Araç Servis Merkezi<br>
+                            Atatürk Caddesi No: 123<br>
+                            Kadıköy, İstanbul<br>
+                            34700
+                        </p>
+                        
+                        <hr>
+                        
+                        <h5 class="fw-bold mb-4"><i class="bi bi-telephone text-success me-2"></i>Telefon</h5>
+                        <p class="text-muted">
+                            Tel: @ViewBag.ContactPhone<br>
+                            Faks: (0216) 555 55 56
+                        </p>
+                        
+                        <hr>
+                        
+                        <h5 class="fw-bold mb-4"><i class="bi bi-envelope text-info me-2"></i>E-posta</h5>
+                        <p class="text-muted">
+                            @ViewBag.ContactEmail<br>
+                            destek@aracservis.com
+                        </p>
+                        
+                        <hr>
+                        
+                        <h5 class="fw-bold mb-4"><i class="bi bi-clock text-warning me-2"></i>Çalışma Saatleri</h5>
+                        <p class="text-muted">
+                            Pazartesi - Cuma: @ViewBag.WorkingHours<br>
+                            Cumartesi: 09:00 - 14:00<br>
+                            Pazar: Kapalı
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">Bize Mesaj Gönderin</h5>
+                        
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Ad Soyad</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Adınız Soyadınız" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">E-posta</label>
+                                    <input type="email" class="form-control" id="email" placeholder="ornek@email.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="phone" placeholder="05XX XXX XX XX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="subject" class="form-label">Konu</label>
+                                    <select class="form-select" id="subject" required>
+                                        <option value="" selected disabled>Seçiniz...</option>
+                                        <option value="appointment">Randevu</option>
+                                        <option value="complaint">Şikayet</option>
+                                        <option value="suggestion">Öneri</option>
+                                        <option value="other">Diğer</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Mesajınız</label>
+                                    <textarea class="form-control" id="message" rows="5" placeholder="Mesajınızı buraya yazın..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-send me-2"></i>Gönder
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4 shadow-sm">
+            <div class="card-body p-0">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.6504097648776!2d29.02529!3d40.98996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDU5JzIzLjkiTiAyOcKwMDEnMzEuMCJF!5e0!3m2!1str!2str!4v1234567890123!5m2!1str!2str" 
+                    width="100%" 
+                    height="400" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>

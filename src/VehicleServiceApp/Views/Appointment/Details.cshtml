@@ -1,0 +1,262 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Randevu Detayı";
+    var statusClass = Model.Status switch
+    {
+        AppointmentStatus.Pending => "warning",
+        AppointmentStatus.Confirmed => "primary",
+        AppointmentStatus.InProgress => "info",
+        AppointmentStatus.Completed => "success",
+        AppointmentStatus.Cancelled => "danger",
+        _ => "secondary"
+    };
+    var statusText = Model.Status switch
+    {
+        AppointmentStatus.Pending => "Beklemede",
+        AppointmentStatus.Confirmed => "Onaylandı",
+        AppointmentStatus.InProgress => "İşlemde",
+        AppointmentStatus.Completed => "Tamamlandı",
+        AppointmentStatus.Cancelled => "İptal Edildi",
+        _ => "Bilinmiyor"
+    };
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main Info -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-@statusClass text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check me-2"></i>Randevu #@Model.Id
+                </h5>
+                <span class="badge bg-light text-@statusClass fs-6">@statusText</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-calendar text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Randevu Tarihi</small>
+                                <strong class="fs-5">
+                                    <datetime-display date="@Model.AppointmentDate" format="long"></datetime-display>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-clock text-info fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Randevu Saati</small>
+                                <strong class="fs-5">@Model.AppointmentTime.ToString(@"hh\:mm")</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Vehicle Info -->
+                <h6 class="fw-bold text-muted mb-3"><i class="bi bi-car-front me-2"></i>ARAÇ BİLGİLERİ</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <small class="text-muted d-block">Marka / Model</small>
+                            <strong>@Model.Vehicle?.Brand @Model.Vehicle?.Model</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <small class="text-muted d-block">Plaka</small>
+                            <strong>@Model.Vehicle?.LicensePlate</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <small class="text-muted d-block">Model Yılı</small>
+                            <strong>@Model.Vehicle?.Year</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Info -->
+                <h6 class="fw-bold text-muted mb-3"><i class="bi bi-tools me-2"></i>HİZMET BİLGİLERİ</h6>
+                <div class="card mb-4" style="border-left: 4px solid @(Model.ServiceType?.ColorCode ?? "#6c757d");">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="fw-bold mb-1">
+                                    <i class="@Model.ServiceType?.IconClass me-2"></i>
+                                    @Model.ServiceType?.Name
+                                </h5>
+                                <p class="text-muted mb-2">@Model.ServiceType?.Description</p>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-clock me-1"></i>Tahmini Süre: ~@Model.ServiceType?.EstimatedDurationMinutes dakika
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <div class="fs-4 fw-bold text-primary">
+                                    <price-display amount="@(Model.ServiceType?.Price ?? 0)"></price-display>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technician Info -->
+                @if (Model.Technician != null)
+                {
+                    <h6 class="fw-bold text-muted mb-3"><i class="bi bi-person-badge me-2"></i>TEKNİSYEN BİLGİLERİ</h6>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px;">
+                                    @Model.Technician.FirstName.FirstOrDefault()@Model.Technician.LastName.FirstOrDefault()
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">@Model.Technician.FirstName @Model.Technician.LastName</h6>
+                                    <small class="text-muted">@Model.Technician.Specialization</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                <!-- Notes -->
+                @if (!string.IsNullOrEmpty(Model.CustomerNotes))
+                {
+                    <h6 class="fw-bold text-muted mb-3"><i class="bi bi-sticky me-2"></i>NOTLAR</h6>
+                    <div class="bg-light rounded p-3 mb-4">
+                        <p class="mb-0">@Model.CustomerNotes</p>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="small text-muted">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        Oluşturulma: <datetime-display date="@Model.CreatedAt" format="long"></datetime-display>
+                    </div>
+                    <div>
+                        @if (Model.Status == AppointmentStatus.Pending)
+                        {
+                            <form asp-action="Cancel" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <confirm-button text="İptal Et" confirm-message="Bu randevuyu iptal etmek istediğinizden emin misiniz?" 
+                                                btn-class="btn btn-outline-danger me-2">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                </confirm-button>
+                            </form>
+                        }
+                        <a asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-arrow-left me-2"></i>Randevularıma Dön
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Status Timeline -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Durum Geçmişi</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item @(Model.Status >= AppointmentStatus.Pending ? "active" : "")">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0">Beklemede</h6>
+                            <small class="text-muted">Randevu oluşturuldu</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item @(Model.Status >= AppointmentStatus.Confirmed ? "active" : "")">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0">Onaylandı</h6>
+                            <small class="text-muted">Randevu onaylandı</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item @(Model.Status >= AppointmentStatus.InProgress ? "active" : "")">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0">İşlemde</h6>
+                            <small class="text-muted">Servis başladı</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item @(Model.Status >= AppointmentStatus.Completed ? "active" : "")">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0">Tamamlandı</h6>
+                            <small class="text-muted">Servis tamamlandı</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Card -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-telephone me-2"></i>İletişim</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Randevunuzla ilgili sorularınız için bize ulaşabilirsiniz.</p>
+                <div class="d-grid gap-2">
+                    <a href="tel:@ViewBag.ContactPhone" class="btn btn-outline-primary">
+                        <i class="bi bi-telephone me-2"></i>@ViewBag.ContactPhone
+                    </a>
+                    <a href="mailto:@ViewBag.ContactEmail" class="btn btn-outline-secondary">
+                        <i class="bi bi-envelope me-2"></i>E-posta Gönder
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+        opacity: 0.5;
+    }
+    .timeline-item.active {
+        opacity: 1;
+    }
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 20px;
+        width: 2px;
+        height: calc(100% - 10px);
+        background: #dee2e6;
+    }
+    .timeline-item:last-child::before {
+        display: none;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+    }
+</style>

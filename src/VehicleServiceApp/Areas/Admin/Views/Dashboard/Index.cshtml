@@ -1,0 +1,273 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="fw-bold mb-0">@Model.TotalAppointments</h2>
+                        <p class="mb-0 opacity-75">Toplam Randevu</p>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="bi bi-calendar-check fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="fw-bold mb-0">@Model.PendingAppointments</h2>
+                        <p class="mb-0">Bekleyen</p>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="bi bi-hourglass-split fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="fw-bold mb-0">@Model.TodayAppointments</h2>
+                        <p class="mb-0 opacity-75">Bugünkü</p>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="bi bi-calendar-day fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="fw-bold mb-0">@Model.CompletedAppointments</h2>
+                        <p class="mb-0 opacity-75">Tamamlanan</p>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="bi bi-check-circle fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="bi bi-people text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@Model.TotalCustomers</h4>
+                        <small class="text-muted">Müşteri</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="bi bi-car-front text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@Model.TotalVehicles</h4>
+                        <small class="text-muted">Araç</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="bi bi-person-badge text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@Model.TotalTechnicians</h4>
+                        <small class="text-muted">Teknisyen</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="bi bi-currency-dollar text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@Model.MonthlyRevenue.ToString("C0", new System.Globalization.CultureInfo("tr-TR"))</h4>
+                        <small class="text-muted">Aylık Gelir</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Appointments -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Son Randevular</h5>
+                <a asp-action="Index" asp-controller="Appointments" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Müşteri</th>
+                                    <th>Araç</th>
+                                    <th>Hizmet</th>
+                                    <th>Tarih</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appointment in Model.RecentAppointments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                     style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                    @appointment.User?.FirstName?.FirstOrDefault()@appointment.User?.LastName?.FirstOrDefault()
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@appointment.User?.FirstName @appointment.User?.LastName</div>
+                                                    <small class="text-muted">@appointment.User?.Email</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@appointment.Vehicle?.Brand @appointment.Vehicle?.Model</div>
+                                            <small class="text-muted">@appointment.Vehicle?.LicensePlate</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge" style="background-color: @(appointment.ServiceType?.ColorCode ?? "#6c757d")">
+                                                @appointment.ServiceType?.Name
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>@appointment.AppointmentDate.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</div>
+                                            <small class="text-muted">@appointment.AppointmentTime.ToString(@"hh\:mm")</small>
+                                        </td>
+                                        <td>
+                                            <appointment-status status="@appointment.Status"></appointment-status>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x display-1 text-muted"></i>
+                        <p class="text-muted mt-3">Henüz randevu bulunmuyor.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Services -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Popüler Hizmetler</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.PopularServices != null && Model.PopularServices.Any())
+                {
+                    @foreach (var service in Model.PopularServices)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle p-2 me-2" style="background-color: @(service.ColorCode)20;">
+                                    <i class="@service.IconClass" style="color: @service.ColorCode"></i>
+                                </div>
+                                <span>@service.Name</span>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">@service.AppointmentCount</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted text-center">Veri bulunamadı.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>Hızlı İşlemler</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a asp-controller="Appointments" asp-action="Index" asp-route-status="Pending" class="btn btn-outline-warning w-100 py-3">
+                            <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>
+                            Bekleyen Randevular
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-controller="ServiceTypes" asp-action="Create" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-plus-circle fs-4 d-block mb-2"></i>
+                            Yeni Hizmet Ekle
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-controller="Technicians" asp-action="Create" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-person-plus fs-4 d-block mb-2"></i>
+                            Yeni Teknisyen
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary w-100 py-3">
+                            <i class="bi bi-house fs-4 d-block mb-2"></i>
+                            Siteye Git
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

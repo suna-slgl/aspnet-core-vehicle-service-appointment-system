@@ -1,0 +1,96 @@
+@model Technician
+@{
+    ViewData["Title"] = "Yeni Teknisyen";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Yeni Teknisyen Ekle</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">Ad <span class="text-danger">*</span></label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Ad" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">Soyad <span class="text-danger">*</span></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Soyad" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label">E-posta <span class="text-danger">*</span></label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="ornek@email.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Telefon <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="05XX XXX XX XX" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Specialization" class="form-label">Uzmanlık Alanı <span class="text-danger">*</span></label>
+                        <select asp-for="Specialization" class="form-select">
+                            <option value="">Seçiniz...</option>
+                            <option value="Genel Mekanik">Genel Mekanik</option>
+                            <option value="Motor Uzmanı">Motor Uzmanı</option>
+                            <option value="Elektrik Sistemleri">Elektrik Sistemleri</option>
+                            <option value="Fren ve Süspansiyon">Fren ve Süspansiyon</option>
+                            <option value="Klima Sistemleri">Klima Sistemleri</option>
+                            <option value="Kaporta ve Boya">Kaporta ve Boya</option>
+                            <option value="Lastik ve Balans">Lastik ve Balans</option>
+                        </select>
+                        <span asp-validation-for="Specialization" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="WorkStartTime" class="form-label">İş Başlangıç Saati</label>
+                            <input asp-for="WorkStartTime" class="form-control" type="time" value="09:00" />
+                            <span asp-validation-for="WorkStartTime" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="WorkEndTime" class="form-label">İş Bitiş Saati</label>
+                            <input asp-for="WorkEndTime" class="form-control" type="time" value="18:00" />
+                            <span asp-validation-for="WorkEndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4 form-check">
+                        <input asp-for="IsActive" class="form-check-input" checked />
+                        <label asp-for="IsActive" class="form-check-label">Aktif Teknisyen</label>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Geri
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

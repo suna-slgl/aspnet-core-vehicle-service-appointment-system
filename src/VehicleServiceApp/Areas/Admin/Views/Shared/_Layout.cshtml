@@ -1,0 +1,192 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Yönetim Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+        }
+        body {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-brand h4 {
+            color: white;
+            margin: 0;
+            font-weight: bold;
+        }
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        .sidebar-nav .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border-left-color: #ffc107;
+        }
+        .sidebar-nav .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        .top-navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+        }
+        .content-wrapper {
+            padding: 1.5rem;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        .stat-card {
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .nav-section-title {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1rem 1.5rem 0.5rem;
+        }
+        @@media (max-width: 768px) {
+            .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+                transition: margin-left 0.3s;
+            }
+            .sidebar.show {
+                margin-left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <h4><i class="bi bi-speedometer2 me-2"></i>Yönetim</h4>
+            <small class="text-white-50">Araç Servis Sistemi</small>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section-title">Ana Menü</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")" 
+               asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-grid-1x2"></i>Dashboard
+            </a>
+            
+            <div class="nav-section-title">Yönetim</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Appointments" ? "active" : "")" 
+               asp-area="Admin" asp-controller="Appointments" asp-action="Index">
+                <i class="bi bi-calendar-check"></i>Randevular
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ServiceTypes" ? "active" : "")" 
+               asp-area="Admin" asp-controller="ServiceTypes" asp-action="Index">
+                <i class="bi bi-tools"></i>Hizmetler
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Technicians" ? "active" : "")" 
+               asp-area="Admin" asp-controller="Technicians" asp-action="Index">
+                <i class="bi bi-people"></i>Teknisyenler
+            </a>
+            
+            <div class="nav-section-title">Sistem</div>
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-house"></i>Siteye Dön
+            </a>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent">
+                    <i class="bi bi-box-arrow-right"></i>Çıkış Yap
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar d-flex justify-content-between align-items-center">
+            <div>
+                <button class="btn btn-link d-md-none" id="sidebarToggle">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <span class="fs-5 fw-bold">@ViewData["Title"]</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-3 text-muted">
+                    <i class="bi bi-person-circle me-1"></i>
+                    @User.Identity?.Name
+                </span>
+                <span class="badge bg-danger">Admin</span>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="content-wrapper">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

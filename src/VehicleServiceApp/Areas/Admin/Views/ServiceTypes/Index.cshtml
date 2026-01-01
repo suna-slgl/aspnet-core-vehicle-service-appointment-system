@@ -1,0 +1,77 @@
+@model IEnumerable<ServiceType>
+@{
+    ViewData["Title"] = "Hizmet Yönetimi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-tools me-2"></i>Hizmetler</h4>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Yeni Hizmet
+    </a>
+</div>
+
+<div class="row g-4">
+    @foreach (var service in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100" style="border-left: 4px solid @service.ColorCode;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="rounded-circle p-3" style="background-color: @(service.ColorCode)20;">
+                            <i class="@service.IconClass fs-3" style="color: @service.ColorCode"></i>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-muted" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@service.Id">
+                                        <i class="bi bi-pencil me-2"></i>Düzenle
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-action="Delete" method="post" 
+                                          onsubmit="return confirm('Bu hizmeti silmek istediğinizden emin misiniz?');">
+                                        <input type="hidden" name="id" value="@service.Id" />
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash me-2"></i>Sil
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold">@service.Name</h5>
+                    <p class="text-muted small mb-3">@service.Description</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary fs-6">
+                            @service.Price.ToString("C0", new System.Globalization.CultureInfo("tr-TR"))
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-clock me-1"></i>~@service.EstimatedDurationMinutes dk
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white small text-muted">
+                    <i class="bi bi-calendar-check me-1"></i>
+                    @(service.Appointments?.Count ?? 0) randevu
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-tools display-1 text-muted"></i>
+            <p class="text-muted mt-3">Henüz hizmet tanımlanmamış.</p>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>İlk Hizmeti Ekle
+            </a>
+        </div>
+    </div>
+}

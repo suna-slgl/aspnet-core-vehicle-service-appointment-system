@@ -1,0 +1,144 @@
+@model IEnumerable<Vehicle>
+@{
+    ViewData["Title"] = "Araçlarım";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-car-front me-2"></i>Araçlarım</h2>
+        <p class="text-muted mb-0">Kayıtlı araçlarınızı görüntüleyin ve yönetin</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Yeni Araç Ekle
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row g-4">
+        @foreach (var vehicle in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm hover-shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">
+                            <i class="bi bi-car-front me-2"></i>@vehicle.LicensePlate
+                        </span>
+                        <span class="badge bg-light text-primary">@vehicle.Year</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">@vehicle.Brand @vehicle.Model</h5>
+                        
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-palette text-muted me-2"></i>
+                                <strong>Renk:</strong> @vehicle.Color
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-speedometer2 text-muted me-2"></i>
+                                <strong>Kilometre:</strong> @vehicle.Mileage?.ToString("N0") km
+                            </li>
+                            <li>
+                                <i class="bi bi-fuel-pump text-muted me-2"></i>
+                                <strong>Yakıt:</strong> 
+                                @switch (vehicle.FuelType)
+                                {
+                                    case FuelType.Gasoline:
+                                        <span class="badge bg-warning text-dark">Benzin</span>
+                                        break;
+                                    case FuelType.Diesel:
+                                        <span class="badge bg-secondary">Dizel</span>
+                                        break;
+                                    case FuelType.Electric:
+                                        <span class="badge bg-success">Elektrik</span>
+                                        break;
+                                    case FuelType.Hybrid:
+                                        <span class="badge bg-info">Hibrit</span>
+                                        break;
+                                    case FuelType.LPG:
+                                        <span class="badge bg-danger">LPG</span>
+                                        break;
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <div class="btn-group w-100" role="group">
+                            <a asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>Detay
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Düzenle
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteModal" 
+                                    data-vehicle-id="@vehicle.Id" 
+                                    data-vehicle-name="@vehicle.Brand @vehicle.Model (@vehicle.LicensePlate)">
+                                <i class="bi bi-trash me-1"></i>Sil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            @Html.EmptyState("Henüz kayıtlı aracınız bulunmuyor.", "bi-car-front")
+            <a asp-action="Create" class="btn btn-primary btn-lg mt-3">
+                <i class="bi bi-plus-lg me-2"></i>İlk Aracınızı Ekleyin
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Araç Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu aracı silmek istediğinizden emin misiniz?</p>
+                <p class="fw-bold" id="vehicleNameToDelete"></p>
+                <p class="text-danger"><small>Bu işlem geri alınamaz ve araca ait tüm randevular da silinecektir.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form asp-action="Delete" method="post" id="deleteForm">
+                    <input type="hidden" name="id" id="vehicleIdToDelete" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('deleteModal').addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const vehicleId = button.getAttribute('data-vehicle-id');
+            const vehicleName = button.getAttribute('data-vehicle-name');
+            
+            document.getElementById('vehicleIdToDelete').value = vehicleId;
+            document.getElementById('vehicleNameToDelete').textContent = vehicleName;
+        });
+    </script>
+}

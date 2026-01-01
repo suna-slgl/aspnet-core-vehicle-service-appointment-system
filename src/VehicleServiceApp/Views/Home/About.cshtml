@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Hakkımızda";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold"><i class="bi bi-info-circle me-2"></i>@ViewBag.CompanyName</h1>
+            <p class="lead text-muted">@ViewBag.Slogan</p>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-5">
+                <h4 class="fw-bold mb-4"><i class="bi bi-building me-2 text-primary"></i>Biz Kimiz?</h4>
+                <p>Araç Servis Randevu Sistemi, araç sahiplerinin bakım ve servis işlemlerini kolayca yönetmelerini sağlayan modern bir platformdur. 2024 yılında kurulan şirketimiz, müşteri memnuniyetini en ön planda tutarak hizmet vermektedir.</p>
+                
+                <h4 class="fw-bold mb-4 mt-5"><i class="bi bi-bullseye me-2 text-success"></i>Misyonumuz</h4>
+                <p>Araç servis sektöründe dijital dönüşümü hızlandırarak, müşterilerimize ve işletmelere zaman ve kaynak tasarrufu sağlamak.</p>
+                
+                <h4 class="fw-bold mb-4 mt-5"><i class="bi bi-eye me-2 text-info"></i>Vizyonumuz</h4>
+                <p>Türkiye'nin en güvenilir ve tercih edilen araç servis randevu platformu olmak.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="display-4 text-primary mb-3"><i class="bi bi-people-fill"></i></div>
+                    <h5 class="fw-bold">Uzman Ekip</h5>
+                    <p class="text-muted">Deneyimli teknisyenlerimiz ile kaliteli hizmet garantisi sunuyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="display-4 text-success mb-3"><i class="bi bi-tools"></i></div>
+                    <h5 class="fw-bold">Modern Ekipman</h5>
+                    <p class="text-muted">En son teknoloji ekipmanlarla aracınıza en iyi hizmeti veriyoruz.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a asp-controller="Contact" asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="bi bi-telephone me-2"></i>Bize Ulaşın
+            </a>
+        </div>
+    </div>
+</div>

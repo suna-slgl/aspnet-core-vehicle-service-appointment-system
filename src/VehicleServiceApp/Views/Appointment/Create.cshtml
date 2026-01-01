@@ -1,0 +1,256 @@
+@model AppointmentCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Randevu";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Yeni Randevu Oluştur</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post" id="appointmentForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <!-- Step 1: Vehicle Selection -->
+                    <div class="step-section mb-4">
+                        <h5 class="fw-bold text-primary mb-3">
+                            <span class="badge bg-primary rounded-circle me-2">1</span>
+                            Araç Seçimi
+                        </h5>
+                        <div class="row g-3">
+                            @if (Model.AvailableVehicles != null && Model.AvailableVehicles.Any())
+                            {
+                                foreach (var vehicle in Model.AvailableVehicles)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <input type="radio" class="btn-check" name="VehicleId" id="vehicle_@vehicle.Id" value="@vehicle.Id" 
+                                               @(Model.VehicleId == vehicle.Id ? "checked" : "") />
+                                        <label class="btn btn-outline-primary w-100 text-start p-3 h-100" for="vehicle_@vehicle.Id">
+                                            <div class="fw-bold"><i class="bi bi-car-front me-2"></i>@vehicle.Brand @vehicle.Model</div>
+                                            <small class="text-muted d-block">@vehicle.LicensePlate • @vehicle.Year</small>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Kayıtlı aracınız bulunmuyor. 
+                                        <a asp-controller="Vehicle" asp-action="Create">Önce araç ekleyin.</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <span asp-validation-for="VehicleId" class="text-danger"></span>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Step 2: Service Selection -->
+                    <div class="step-section mb-4">
+                        <h5 class="fw-bold text-primary mb-3">
+                            <span class="badge bg-primary rounded-circle me-2">2</span>
+                            Hizmet Seçimi
+                        </h5>
+                        <div class="row g-3">
+                            @if (Model.AvailableServiceTypes != null)
+                            {
+                                foreach (var service in Model.AvailableServiceTypes)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <input type="radio" class="btn-check service-radio" name="ServiceTypeId" 
+                                               id="service_@service.Id" value="@service.Id"
+                                               data-price="@service.Price" data-duration="@service.EstimatedDurationMinutes"
+                                               @(Model.ServiceTypeId == service.Id ? "checked" : "") />
+                                        <label class="btn btn-outline-secondary w-100 text-start p-3 h-100" for="service_@service.Id"
+                                               style="border-left: 4px solid @service.ColorCode;">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <div class="fw-bold">
+                                                        <i class="@service.IconClass me-2"></i>@service.Name
+                                                    </div>
+                                                    <small class="text-muted d-block">@service.Description</small>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <span class="badge bg-primary">
+                                                    <price-display amount="@service.Price" currency=""></price-display>
+                                                </span>
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-clock me-1"></i>~@service.EstimatedDurationMinutes dk
+                                                </span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Step 3: Date & Time Selection -->
+                    <div class="step-section mb-4">
+                        <h5 class="fw-bold text-primary mb-3">
+                            <span class="badge bg-primary rounded-circle me-2">3</span>
+                            Tarih ve Saat Seçimi
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="AppointmentDate" class="form-label">
+                                    <i class="bi bi-calendar me-1"></i>Tarih <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AppointmentDate" type="date" class="form-control form-control-lg" 
+                                       min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                                <small class="text-muted">En erken yarın için randevu alabilirsiniz.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AppointmentTime" class="form-label">
+                                    <i class="bi bi-clock me-1"></i>Saat <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="AppointmentTime" class="form-select form-select-lg">
+                                    <option value="">Saat Seçiniz...</option>
+                                    @for (int hour = 9; hour <= 17; hour++)
+                                    {
+                                        <option value="@(new TimeSpan(hour, 0, 0))">@hour.ToString("00"):00</option>
+                                        @if (hour < 17)
+                                        {
+                                            <option value="@(new TimeSpan(hour, 30, 0))">@hour.ToString("00"):30</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                                <small class="text-muted">Çalışma saatleri: 09:00 - 18:00</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Step 4: Technician Selection (Optional) -->
+                    <div class="step-section mb-4">
+                        <h5 class="fw-bold text-primary mb-3">
+                            <span class="badge bg-secondary rounded-circle me-2">4</span>
+                            Teknisyen Tercihi <small class="text-muted fw-normal">(İsteğe Bağlı)</small>
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-4">
+                                <input type="radio" class="btn-check" name="TechnicianId" id="tech_any" value="" checked />
+                                <label class="btn btn-outline-secondary w-100 text-start p-3" for="tech_any">
+                                    <div class="fw-bold"><i class="bi bi-person-check me-2"></i>Müsait Teknisyen</div>
+                                    <small class="text-muted">Sistem otomatik atayacak</small>
+                                </label>
+                            </div>
+                            @if (Model.AvailableTechnicians != null)
+                            {
+                                foreach (var tech in Model.AvailableTechnicians)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <input type="radio" class="btn-check" name="TechnicianId" 
+                                               id="tech_@tech.Id" value="@tech.Id"
+                                               @(Model.ServiceTypeId == tech.Id ? "checked" : "") />
+                                        <label class="btn btn-outline-secondary w-100 text-start p-3" for="tech_@tech.Id">
+                                            <div class="fw-bold">
+                                                <i class="bi bi-person me-2"></i>@tech.FirstName @tech.LastName
+                                            </div>
+                                            <small class="text-muted d-block">@tech.Specialization</small>
+                                            <span class="badge bg-info">@tech.WorkStartTime.ToString(@"hh\:mm") - @tech.WorkEndTime.ToString(@"hh\:mm")</span>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Step 5: Notes -->
+                    <div class="step-section mb-4">
+                        <h5 class="fw-bold text-primary mb-3">
+                            <span class="badge bg-secondary rounded-circle me-2">5</span>
+                            Notlar <small class="text-muted fw-normal">(İsteğe Bağlı)</small>
+                        </h5>
+                        <textarea asp-for="CustomerNotes" class="form-control" rows="3" 
+                                  placeholder="Aracınızla ilgili belirtmek istediğiniz özel durumlar..."></textarea>
+                        <span asp-validation-for="CustomerNotes" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="card bg-light mb-4" id="summaryCard" style="display: none;">
+                        <div class="card-body">
+                            <h5 class="fw-bold"><i class="bi bi-receipt me-2"></i>Randevu Özeti</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Seçilen Hizmet:</strong> <span id="summaryService">-</span></p>
+                                    <p><strong>Tahmini Süre:</strong> <span id="summaryDuration">-</span></p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p class="fs-4 fw-bold text-primary">
+                                        Toplam: <span id="summaryPrice">-</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Geri
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                            <i class="bi bi-check-lg me-2"></i>Randevu Oluştur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('appointmentForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const summaryCard = document.getElementById('summaryCard');
+            
+            function updateSummary() {
+                const selectedService = document.querySelector('input[name="ServiceTypeId"]:checked');
+                const selectedVehicle = document.querySelector('input[name="VehicleId"]:checked');
+                
+                if (selectedService && selectedVehicle) {
+                    const price = selectedService.dataset.price;
+                    const duration = selectedService.dataset.duration;
+                    const serviceName = selectedService.nextElementSibling.querySelector('.fw-bold').textContent;
+                    
+                    document.getElementById('summaryService').textContent = serviceName;
+                    document.getElementById('summaryDuration').textContent = duration + ' dakika';
+                    document.getElementById('summaryPrice').textContent = parseFloat(price).toLocaleString('tr-TR', {
+                        style: 'currency',
+                        currency: 'TRY'
+                    });
+                    
+                    summaryCard.style.display = 'block';
+                    submitBtn.disabled = false;
+                } else {
+                    summaryCard.style.display = 'none';
+                    submitBtn.disabled = true;
+                }
+            }
+            
+            document.querySelectorAll('input[name="ServiceTypeId"], input[name="VehicleId"]').forEach(function(radio) {
+                radio.addEventListener('change', updateSummary);
+            });
+            
+            updateSummary();
+        });
+    </script>
+}

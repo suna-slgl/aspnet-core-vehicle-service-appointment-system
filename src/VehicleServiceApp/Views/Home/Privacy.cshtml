@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Gizlilik Politikas�";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold"><i class="bi bi-shield-check me-2"></i>Gizlilik Politikas�</h1>
+            <p class="text-muted">Son g�ncelleme: @DateTime.Now.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <h4 class="fw-bold mb-4">1. Giri�</h4>
+                <p>Ara� Servis Randevu Sistemi olarak gizlili�inize �nem veriyoruz. Bu gizlilik politikas�, ki�isel verilerinizin nas�l topland���n�, kullan�ld���n� ve korundu�unu a��klamaktad�r.</p>
+
+                <h4 class="fw-bold mb-4 mt-5">2. Toplanan Veriler</h4>
+                <p>Hizmetlerimizi sunabilmek i�in a�a��daki verileri topluyoruz:</p>
+                <ul>
+                    <li>Ad, soyad ve ileti�im bilgileri</li>
+                    <li>Ara� bilgileri (plaka, marka, model)</li>
+                    <li>Randevu ge�mi�i ve servis kay�tlar�</li>
+                    <li>Web sitesi kullan�m verileri</li>
+                </ul>
+
+                <h4 class="fw-bold mb-4 mt-5">3. Verilerin Kullan�m�</h4>
+                <p>Toplad���m�z veriler �u ama�larla kullan�lmaktad�r:</p>
+                <ul>
+                    <li>Randevu olu�turma ve y�netimi</li>
+                    <li>M��teri hizmetleri deste�i</li>
+                    <li>Hizmet kalitesinin iyile�tirilmesi</li>
+                    <li>Yasal y�k�ml�l�klerin yerine getirilmesi</li>
+                </ul>
+
+                <h4 class="fw-bold mb-4 mt-5">4. Veri G�venli�i</h4>
+                <p>Verilerinizi korumak i�in end�stri standard� g�venlik �nlemleri uyguluyoruz. T�m veriler �ifreli olarak saklanmaktad�r.</p>
+
+                <h4 class="fw-bold mb-4 mt-5">5. �erezler</h4>
+                <p>Web sitemiz, kullan�c� deneyimini iyile�tirmek i�in �erezler kullanmaktad�r. Taray�c� ayarlar�n�zdan �erezleri devre d��� b�rakabilirsiniz.</p>
+
+                <h4 class="fw-bold mb-4 mt-5">6. Haklar�n�z</h4>
+                <p>KVKK kapsam�nda a�a��daki haklara sahipsiniz:</p>
+                <ul>
+                    <li>Verilerinize eri�im hakk�</li>
+                    <li>Verilerin d�zeltilmesini talep etme hakk�</li>
+                    <li>Verilerin silinmesini talep etme hakk�</li>
+                    <li>Veri i�lemeye itiraz etme hakk�</li>
+                </ul>
+
+                <h4 class="fw-bold mb-4 mt-5">7. �leti�im</h4>
+                <p>Gizlilik politikam�z hakk�nda sorular�n�z i�in bizimle ileti�ime ge�ebilirsiniz:</p>
+                <p>E-posta: @ViewBag.ContactEmail</p>
+            </div>
+        </div>
+    </div>
+</div>

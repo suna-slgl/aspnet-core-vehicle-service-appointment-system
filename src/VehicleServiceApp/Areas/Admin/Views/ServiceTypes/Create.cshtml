@@ -1,0 +1,100 @@
+@model ServiceType
+@{
+    ViewData["Title"] = Model == null ? "Yeni Hizmet" : "Hizmet Düzenle";
+    var isEdit = Model?.Id > 0;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-@(isEdit ? "pencil" : "plus-circle") me-2"></i>
+                    @(isEdit ? "Hizmet Düzenle" : "Yeni Hizmet Ekle")
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+                    @if (isEdit)
+                    {
+                        <input type="hidden" asp-for="Id" />
+                    }
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Hizmet Adı <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: Yağ Değişimi" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" 
+                                  placeholder="Hizmet hakkında kısa açıklama..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Price" class="form-label">Ücret (₺) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₺</span>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedDurationMinutes" class="form-label">Tahmini Süre (dk) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="EstimatedDurationMinutes" class="form-control" type="number" min="15" step="15" />
+                                <span class="input-group-text">dakika</span>
+                            </div>
+                            <span asp-validation-for="EstimatedDurationMinutes" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="IconClass" class="form-label">İkon Sınıfı</label>
+                            <input asp-for="IconClass" class="form-control" placeholder="bi-wrench" />
+                            <small class="text-muted">
+                                <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a> kullanabilirsiniz.
+                            </small>
+                            <span asp-validation-for="IconClass" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ColorCode" class="form-label">Renk Kodu</label>
+                            <div class="input-group">
+                                <input asp-for="ColorCode" class="form-control" type="color" style="height: 38px; padding: 0.25rem;" />
+                                <input type="text" class="form-control" id="colorText" value="@(Model?.ColorCode ?? "#3498db")" readonly />
+                            </div>
+                            <span asp-validation-for="ColorCode" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Geri
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>@(isEdit ? "Güncelle" : "Kaydet")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('ColorCode').addEventListener('input', function() {
+            document.getElementById('colorText').value = this.value;
+        });
+    </script>
+}

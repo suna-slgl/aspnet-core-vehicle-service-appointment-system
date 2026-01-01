@@ -1,0 +1,220 @@
+@model IEnumerable<Appointment>
+@{
+    ViewData["Title"] = "Randevularım";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-calendar-check me-2"></i>Randevularım</h2>
+        <p class="text-muted mb-0">Tüm randevularınızı görüntüleyin ve yönetin</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Yeni Randevu
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Durum</label>
+                <select name="status" class="form-select">
+                    <option value="">Tümü</option>
+                    <option value="Pending">Beklemede</option>
+                    <option value="Confirmed">Onaylandı</option>
+                    <option value="InProgress">İşlemde</option>
+                    <option value="Completed">Tamamlandı</option>
+                    <option value="Cancelled">İptal</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Başlangıç Tarihi</label>
+                <input type="date" name="startDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Bitiş Tarihi</label>
+                <input type="date" name="endDate" class="form-control" />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-funnel me-2"></i>Filtrele
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning bg-opacity-10 border-warning">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-warning mb-0">@Model.Count(a => a.Status == AppointmentStatus.Pending)</h3>
+                    <small class="text-muted">Beklemede</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary bg-opacity-10 border-primary">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-primary mb-0">@Model.Count(a => a.Status == AppointmentStatus.Confirmed)</h3>
+                    <small class="text-muted">Onaylandı</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info bg-opacity-10 border-info">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-info mb-0">@Model.Count(a => a.Status == AppointmentStatus.InProgress)</h3>
+                    <small class="text-muted">İşlemde</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success bg-opacity-10 border-success">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-success mb-0">@Model.Count(a => a.Status == AppointmentStatus.Completed)</h3>
+                    <small class="text-muted">Tamamlandı</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tarih & Saat</th>
+                        <th>Araç</th>
+                        <th>Hizmet</th>
+                        <th>Teknisyen</th>
+                        <th>Ücret</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model.OrderByDescending(a => a.AppointmentDate))
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">
+                                    <datetime-display date="@appointment.AppointmentDate" format="short"></datetime-display>
+                                </div>
+                                <small class="text-muted">@appointment.AppointmentTime.ToString(@"hh\:mm")</small>
+                            </td>
+                            <td>
+                                <div class="fw-bold">@appointment.Vehicle?.Brand @appointment.Vehicle?.Model</div>
+                                <small class="text-muted">@appointment.Vehicle?.LicensePlate</small>
+                            </td>
+                            <td>
+                                <span class="badge" style="background-color: @(appointment.ServiceType?.ColorCode ?? "#6c757d")">
+                                    <i class="@appointment.ServiceType?.IconClass me-1"></i>
+                                    @appointment.ServiceType?.Name
+                                </span>
+                            </td>
+                            <td>
+                                @if (appointment.Technician != null)
+                                {
+                                    <span>@appointment.Technician.FirstName @appointment.Technician.LastName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Atanmadı</span>
+                                }
+                            </td>
+                            <td>
+                                <price-display amount="@(appointment.ServiceType?.Price ?? 0)"></price-display>
+                            </td>
+                            <td>
+                                <appointment-status status="@appointment.Status"></appointment-status>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-outline-primary" title="Detay">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (appointment.Status == AppointmentStatus.Pending)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" title="İptal Et"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#cancelModal"
+                                                data-appointment-id="@appointment.Id">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            @Html.EmptyState("Henüz randevunuz bulunmuyor.", "bi-calendar-x")
+            <a asp-action="Create" class="btn btn-primary btn-lg mt-3">
+                <i class="bi bi-plus-lg me-2"></i>İlk Randevunuzu Oluşturun
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Cancel Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-warning me-2"></i>Randevu İptali</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu randevuyu iptal etmek istediğinizden emin misiniz?</p>
+                <p class="text-muted"><small>İptal edilen randevular geri alınamaz.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                <form asp-action="Cancel" method="post" id="cancelForm">
+                    <input type="hidden" name="id" id="appointmentIdToCancel" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle me-2"></i>İptal Et
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('cancelModal').addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const appointmentId = button.getAttribute('data-appointment-id');
+            document.getElementById('appointmentIdToCancel').value = appointmentId;
+        });
+    </script>
+}

@@ -1,0 +1,198 @@
+@model Vehicle
+@{
+    ViewData["Title"] = $"{Model.Brand} {Model.Model} - Araç Detayı";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-car-front me-2"></i>@Model.Brand @Model.Model
+                </h5>
+                <span class="badge bg-light text-primary fs-6">@Model.LicensePlate</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-building text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Marka</small>
+                                <strong class="fs-5">@Model.Brand</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-tag text-success fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Model</small>
+                                <strong class="fs-5">@Model.Model</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-calendar text-info fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Model Yılı</small>
+                                <strong class="fs-5">@Model.Year</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-palette text-warning fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Renk</small>
+                                <strong class="fs-5">@(Model.Color ?? "Belirtilmemiş")</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-speedometer2 text-danger fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Kilometre</small>
+                                <strong class="fs-5">@(Model.Mileage?.ToString("N0") ?? "Belirtilmemiş") km</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-fuel-pump text-secondary fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Yakıt Tipi</small>
+                                <strong class="fs-5">
+                                    @switch (Model.FuelType)
+                                    {
+                                        case FuelType.Gasoline:
+                                            <span class="badge bg-warning text-dark">Benzin</span>
+                                            break;
+                                        case FuelType.Diesel:
+                                            <span class="badge bg-secondary">Dizel</span>
+                                            break;
+                                        case FuelType.Electric:
+                                            <span class="badge bg-success">Elektrik</span>
+                                            break;
+                                        case FuelType.Hybrid:
+                                            <span class="badge bg-info">Hibrit</span>
+                                            break;
+                                        case FuelType.LPG:
+                                            <span class="badge bg-danger">LPG</span>
+                                            break;
+                                    }
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-muted small">
+                    <div class="col-md-6">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        Oluşturulma: <datetime-display date="@Model.CreatedAt" format="long"></datetime-display>
+                    </div>
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="col-md-6">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            Son Güncelleme: <datetime-display date="@Model.UpdatedAt.Value" format="long"></datetime-display>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Araçlarıma Dön
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+                            <i class="bi bi-pencil me-2"></i>Düzenle
+                        </a>
+                        <a asp-controller="Appointment" asp-action="Create" asp-route-vehicleId="@Model.Id" class="btn btn-success">
+                            <i class="bi bi-calendar-plus me-2"></i>Randevu Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Servis Geçmişi</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Appointments != null && Model.Appointments.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate).Take(5))
+                        {
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@appointment.ServiceType?.Name</h6>
+                                        <small class="text-muted">
+                                            <datetime-display date="@appointment.AppointmentDate" format="short"></datetime-display>
+                                        </small>
+                                    </div>
+                                    <appointment-status status="@appointment.Status"></appointment-status>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    @if (Model.Appointments.Count > 5)
+                    {
+                        <div class="text-center mt-3">
+                            <a asp-controller="Appointment" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                                Tümünü Gör (@Model.Appointments.Count)
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @Html.EmptyState("Bu araç için henüz servis kaydı yok.", "bi-calendar-x")
+                }
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Öneriler</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    @if (Model.Mileage.HasValue && Model.Mileage >= 10000)
+                    {
+                        <span>Aracınız @Model.Mileage?.ToString("N0") km'de. Yağ değişimi zamanı gelmiş olabilir!</span>
+                    }
+                    else
+                    {
+                        <span>Düzenli bakım aracınızın ömrünü uzatır.</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

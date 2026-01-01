@@ -1,0 +1,171 @@
+@model VehicleEditViewModel
+@{
+    ViewData["Title"] = "Araç Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Araç Düzenle</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LicensePlate" class="form-label">
+                                <i class="bi bi-card-text me-1"></i>Plaka <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="LicensePlate" class="form-control" placeholder="34 ABC 123" />
+                            <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Year" class="form-label">
+                                <i class="bi bi-calendar me-1"></i>Model Yılı <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Year" class="form-select">
+                                <option value="">Seçiniz...</option>
+                                @for (int year = DateTime.Now.Year + 1; year >= 1990; year--)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Brand" class="form-label">
+                                <i class="bi bi-building me-1"></i>Marka <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Brand" class="form-select">
+                                <option value="">Seçiniz...</option>
+                                <option value="Audi">Audi</option>
+                                <option value="BMW">BMW</option>
+                                <option value="Chevrolet">Chevrolet</option>
+                                <option value="Citroen">Citroen</option>
+                                <option value="Dacia">Dacia</option>
+                                <option value="Fiat">Fiat</option>
+                                <option value="Ford">Ford</option>
+                                <option value="Honda">Honda</option>
+                                <option value="Hyundai">Hyundai</option>
+                                <option value="Kia">Kia</option>
+                                <option value="Mazda">Mazda</option>
+                                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                                <option value="Nissan">Nissan</option>
+                                <option value="Opel">Opel</option>
+                                <option value="Peugeot">Peugeot</option>
+                                <option value="Renault">Renault</option>
+                                <option value="Seat">Seat</option>
+                                <option value="Skoda">Skoda</option>
+                                <option value="Toyota">Toyota</option>
+                                <option value="Volkswagen">Volkswagen</option>
+                                <option value="Volvo">Volvo</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                            <span asp-validation-for="Brand" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Model" class="form-label">
+                                <i class="bi bi-tag me-1"></i>Model <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Model" class="form-control" />
+                            <span asp-validation-for="Model" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Color" class="form-label">
+                                <i class="bi bi-palette me-1"></i>Renk
+                            </label>
+                            <select asp-for="Color" class="form-select">
+                                <option value="">Seçiniz...</option>
+                                <option value="Beyaz">Beyaz</option>
+                                <option value="Siyah">Siyah</option>
+                                <option value="Gri">Gri</option>
+                                <option value="Gümüş">Gümüş</option>
+                                <option value="Kırmızı">Kırmızı</option>
+                                <option value="Mavi">Mavi</option>
+                                <option value="Lacivert">Lacivert</option>
+                                <option value="Yeşil">Yeşil</option>
+                                <option value="Kahverengi">Kahverengi</option>
+                                <option value="Bej">Bej</option>
+                                <option value="Sarı">Sarı</option>
+                                <option value="Turuncu">Turuncu</option>
+                                <option value="Mor">Mor</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                            <span asp-validation-for="Color" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Mileage" class="form-label">
+                                <i class="bi bi-speedometer2 me-1"></i>Kilometre
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="Mileage" class="form-control" />
+                                <span class="input-group-text">km</span>
+                            </div>
+                            <span asp-validation-for="Mileage" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="FuelType" class="form-label">
+                            <i class="bi bi-fuel-pump me-1"></i>Yakıt Tipi <span class="text-danger">*</span>
+                        </label>
+                        <div class="row g-2">
+                            @foreach (var fuelType in Enum.GetValues(typeof(FuelType)).Cast<FuelType>())
+                            {
+                                var fuelName = fuelType switch
+                                {
+                                    FuelType.Gasoline => "Benzin",
+                                    FuelType.Diesel => "Dizel",
+                                    FuelType.Electric => "Elektrik",
+                                    FuelType.Hybrid => "Hibrit",
+                                    FuelType.LPG => "LPG",
+                                    _ => fuelType.ToString()
+                                };
+                                var isChecked = Model.FuelType == fuelType ? "checked" : "";
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <input type="radio" class="btn-check" name="FuelType" id="fuel_@fuelType" value="@((int)fuelType)" @isChecked />
+                                    <label class="btn btn-outline-secondary w-100" for="fuel_@fuelType">
+                                        @fuelName
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        <span asp-validation-for="FuelType" class="text-danger"></span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Geri
+                        </a>
+                        <div>
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-info me-2">
+                                <i class="bi bi-eye me-2"></i>Detay
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-2"></i>Güncelle
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
