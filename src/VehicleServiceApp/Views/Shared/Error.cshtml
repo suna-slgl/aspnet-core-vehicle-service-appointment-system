@@ -8,15 +8,15 @@
         <div class="display-1 text-danger mb-4">
             <i class="bi bi-exclamation-triangle"></i>
         </div>
-        <h1 class="display-4 fw-bold">Bir Hata Olu�tu</h1>
+        <h1 class="display-4 fw-bold">Bir Hata Oluştu</h1>
         <p class="lead text-muted mb-4">
-            �ste�iniz i�lenirken beklenmeyen bir hata olu�tu. L�tfen daha sonra tekrar deneyin.
+            İsteğiniz işlenirken beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.
         </p>
         
         @if (Model?.ShowRequestId ?? false)
         {
             <div class="alert alert-secondary">
-                <strong>�stek Kimli�i:</strong> <code>@Model?.RequestId</code>
+                <strong>İstek Kimliği:</strong> <code>@Model?.RequestId</code>
             </div>
         }
         
@@ -25,7 +25,7 @@
                 <i class="bi bi-house me-2"></i>Ana Sayfa
             </a>
             <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
-                <i class="bi bi-arrow-left me-2"></i>Geri D�n
+                <i class="bi bi-arrow-left me-2"></i>Geri Dön
             </button>
         </div>
     </div>

@@ -7,16 +7,16 @@
 <section class="hero-section rounded-4 mb-5">
     <div class="container text-center py-5">
         <h1 class="display-4 fw-bold mb-4">
-            <i class="bi bi-car-front-fill me-3"></i>Ara� Servis Randevu Sistemi
+            <i class="bi bi-car-front-fill me-3"></i>Araç Servis Randevu Sistemi
         </h1>
-        <p class="lead mb-4">Arac�n�z i�in profesyonel bak�m ve servis hizmetleri. Online randevu al�n, zaman�n�z� verimli kullan�n.</p>
+        <p class="lead mb-4">Aracınız için profesyonel bakım ve servis hizmetleri. Online randevu alın, zamanınızı verimli kullanın.</p>
         @if (!User.Identity?.IsAuthenticated ?? true)
         {
             <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg me-3">
-                <i class="bi bi-person-plus me-2"></i>Hemen Kay�t Ol
+                <i class="bi bi-person-plus me-2"></i>Hemen Kayıt Ol
             </a>
             <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Giri� Yap
+                <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
             </a>
         }
         else
@@ -40,8 +40,8 @@
                 <div class="service-icon mx-auto bg-primary bg-opacity-10 text-primary">
                     <i class="bi bi-clock"></i>
                 </div>
-                <h5 class="fw-bold">H�zl� Randevu</h5>
-                <p class="text-muted">Birka� t�kla online randevu al�n, bekleme derdi yok.</p>
+                <h5 class="fw-bold">Hızlı Randevu</h5>
+                <p class="text-muted">Birkaç tıkla online randevu alın, bekleme derdi yok.</p>
             </div>
         </div>
         <div class="col-md-4">
@@ -49,7 +49,7 @@
                 <div class="service-icon mx-auto bg-success bg-opacity-10 text-success">
                     <i class="bi bi-shield-check"></i>
                 </div>
-                <h5 class="fw-bold">G�venilir Hizmet</h5>
+                <h5 class="fw-bold">Güvenilir Hizmet</h5>
                 <p class="text-muted">Uzman teknisyenlerimizle kaliteli servis garantisi.</p>
             </div>
         </div>
@@ -59,7 +59,7 @@
                     <i class="bi bi-currency-exchange"></i>
                 </div>
                 <h5 class="fw-bold">Uygun Fiyat</h5>
-                <p class="text-muted">Rekabet�i fiyatlarla b�t�enize uygun se�enekler.</p>
+                <p class="text-muted">Rekabetçi fiyatlarla bütçenize uygun seçenekler.</p>
             </div>
         </div>
     </div>
@@ -69,7 +69,7 @@
 <section class="mb-5">
     <div class="text-center mb-5">
         <h2 class="fw-bold">Hizmetlerimiz</h2>
-        <p class="text-muted">Arac�n�z i�in sundu�umuz kapsaml� servis hizmetleri</p>
+        <p class="text-muted">Aracınız için sunduğumuz kapsamlı servis hizmetleri</p>
     </div>
     <div class="row g-4">
         @foreach (var service in Model)
@@ -99,18 +99,18 @@
 
 <!-- CTA Section -->
 <section class="bg-primary text-white rounded-4 p-5 text-center mb-5">
-    <h3 class="fw-bold mb-3">Arac�n�za �yi Bak�n!</h3>
-    <p class="mb-4">D�zenli bak�m, arac�n�z�n �mr�n� uzat�r ve g�venli�inizi sa�lar.</p>
+    <h3 class="fw-bold mb-3">Aracınıza İyi Bakın!</h3>
+    <p class="mb-4">Düzenli bakım, aracınızın ömrünü uzatır ve güvenliğinizi sağlar.</p>
     @if (!User.Identity?.IsAuthenticated ?? true)
     {
         <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg">
-            <i class="bi bi-calendar-check me-2"></i>Hemen Ba�lay�n
+            <i class="bi bi-calendar-check me-2"></i>Hemen Başlayın
         </a>
     }
     else
     {
         <a asp-controller="Appointment" asp-action="Create" class="btn btn-light btn-lg">
-            <i class="bi bi-calendar-plus me-2"></i>Randevu Olu�tur
+            <i class="bi bi-calendar-plus me-2"></i>Randevu Oluştur
         </a>
     }
 </section>
@@ -121,13 +121,13 @@
         <div class="col-md-3">
             <div class="card p-4">
                 <h2 class="display-5 fw-bold text-primary">1000+</h2>
-                <p class="text-muted mb-0">Mutlu M��teri</p>
+                <p class="text-muted mb-0">Mutlu Müşteri</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card p-4">
                 <h2 class="display-5 fw-bold text-success">@Model.Count()</h2>
-                <p class="text-muted mb-0">Servis T�r�</p>
+                <p class="text-muted mb-0">Servis Türü</p>
             </div>
         </div>
         <div class="col-md-3">

@@ -6,8 +6,30 @@ using VehicleServiceApp.Middleware;
 using VehicleServiceApp.Models;
 using VehicleServiceApp.Services;
 using VehicleServiceApp.Services.Interfaces;
+using System.Globalization;
+using System.Text;
+
+// Set encoding for Turkish characters
+Console.OutputEncoding = Encoding.UTF8;
+Console.InputEncoding = Encoding.UTF8;
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure UTF-8 encoding globally
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+});
+
+// Configure Turkish culture
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { new CultureInfo("tr-TR") };
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("tr-TR");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 // Add DbContext with SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -85,6 +107,9 @@ if (!app.Environment.IsDevelopment())
 // Custom Middleware
 app.UseSecurityHeaders();
 app.UseRequestLogging();
+
+// Request Localization for Turkish
+app.UseRequestLocalization();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
