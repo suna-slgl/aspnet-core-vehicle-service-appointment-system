@@ -1,0 +1,6 @@
+providers = ["dotnet"]
+buildCommand = "dotnet publish src/VehicleServiceApp/VehicleServiceApp.csproj -c Release -o bin"
+startCommand = "dotnet bin/VehicleServiceApp.dll --urls http://0.0.0.0:$PORT"
+
+[variables]
+ASPNETCORE_ENVIRONMENT = "Production"
