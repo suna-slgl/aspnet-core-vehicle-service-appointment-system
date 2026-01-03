@@ -32,8 +32,27 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Add DbContext with PostgreSQL
+// Support Render's `DATABASE_URL` (postgres://user:pass@host:port/db) and fall back to configuration
+string? databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo?.Split(':', 2) ?? Array.Empty<string>();
+    var username = userInfo.Length > 0 ? Uri.UnescapeDataString(userInfo[0]) : string.Empty;
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
+    var host = uri.Host;
+    var port = uri.Port > 0 ? uri.Port : 5432;
+    var database = uri.AbsolutePath?.TrimStart('/') ?? string.Empty;
+    connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};Pooling=true;Ssl Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Add Identity with custom ApplicationUser
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
