@@ -35,6 +35,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Support Render's `DATABASE_URL` (postgres://user:pass@host:port/db) and fall back to configuration
 string? databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 string connectionString;
+string connectionSource;
 if (!string.IsNullOrEmpty(databaseUrl))
 {
     var uri = new Uri(databaseUrl);
@@ -45,11 +46,15 @@ if (!string.IsNullOrEmpty(databaseUrl))
     var port = uri.Port > 0 ? uri.Port : 5432;
     var database = uri.AbsolutePath?.TrimStart('/') ?? string.Empty;
     connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};Pooling=true;Ssl Mode=Require;Trust Server Certificate=true";
+    connectionSource = $"DATABASE_URL (Host={host}, Database={database})";
 }
 else
 {
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+    connectionSource = "appsettings.json DefaultConnection";
 }
+
+Console.WriteLine($"[DB Config] Connection source: {connectionSource}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
