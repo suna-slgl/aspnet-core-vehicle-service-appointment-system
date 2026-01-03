@@ -22,7 +22,7 @@ namespace VehicleServiceApp.Models
         public string? ProfileImagePath { get; set; }
 
         [Display(Name = "Kayıt Tarihi")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Son Güncelleme")]
         public DateTime? UpdatedAt { get; set; }
@@ -39,3 +39,4 @@ namespace VehicleServiceApp.Models
         public string FullName => $"{FirstName} {LastName}";
     }
 }
+

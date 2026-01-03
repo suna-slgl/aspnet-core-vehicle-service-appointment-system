@@ -43,7 +43,7 @@ namespace VehicleServiceApp.Services
 
         public async Task<ServiceType> CreateServiceTypeAsync(ServiceType serviceType)
         {
-            serviceType.CreatedAt = DateTime.Now;
+            serviceType.CreatedAt = DateTime.UtcNow;
             serviceType.IsActive = true;
             _context.ServiceTypes.Add(serviceType);
             await _context.SaveChangesAsync();
@@ -127,7 +127,7 @@ namespace VehicleServiceApp.Services
 
         public async Task<Technician> CreateTechnicianAsync(Technician technician)
         {
-            technician.CreatedAt = DateTime.Now;
+            technician.CreatedAt = DateTime.UtcNow;
             technician.IsActive = true;
             _context.Technicians.Add(technician);
             await _context.SaveChangesAsync();
@@ -190,3 +190,4 @@ namespace VehicleServiceApp.Services
         }
     }
 }
+

@@ -30,7 +30,7 @@ namespace VehicleServiceApp.ViewModels
         [Required(ErrorMessage = "Yıl alanı zorunludur")]
         [Range(1900, 2030, ErrorMessage = "Geçerli bir yıl giriniz")]
         [Display(Name = "Model Yılı")]
-        public int Year { get; set; } = DateTime.Now.Year;
+        public int Year { get; set; } = DateTime.UtcNow.Year;
 
         [StringLength(20)]
         [Display(Name = "Renk")]
@@ -131,3 +131,4 @@ namespace VehicleServiceApp.ViewModels
         public string? SearchTerm { get; set; }
     }
 }
+

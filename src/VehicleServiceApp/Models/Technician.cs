@@ -51,7 +51,7 @@ namespace VehicleServiceApp.Models
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Kayıt Tarihi")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation Properties
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
@@ -64,3 +64,4 @@ namespace VehicleServiceApp.Models
         public string WorkingHours => $"{WorkStartTime:hh\\:mm} - {WorkEndTime:hh\\:mm}";
     }
 }
+

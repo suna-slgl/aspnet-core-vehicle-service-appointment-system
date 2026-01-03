@@ -68,7 +68,7 @@ namespace VehicleServiceApp.Filters
                 context.RouteData.Values["action"]);
 
             // Store admin action info for audit
-            context.HttpContext.Items["AdminActionTime"] = DateTime.Now;
+            context.HttpContext.Items["AdminActionTime"] = DateTime.UtcNow;
             context.HttpContext.Items["AdminUser"] = userName;
         }
 
@@ -77,7 +77,7 @@ namespace VehicleServiceApp.Filters
             var startTime = context.HttpContext.Items["AdminActionTime"] as DateTime?;
             if (startTime.HasValue)
             {
-                var duration = DateTime.Now - startTime.Value;
+                var duration = DateTime.UtcNow - startTime.Value;
                 _logger.LogInformation(
                     "Admin action completed in {Duration}ms",
                     duration.TotalMilliseconds);
@@ -95,7 +95,7 @@ namespace VehicleServiceApp.Filters
             if (context.Controller is Controller controller)
             {
                 controller.ViewData["AppName"] = "Araç Servis Randevu Sistemi";
-                controller.ViewData["CurrentYear"] = DateTime.Now.Year;
+                controller.ViewData["CurrentYear"] = DateTime.UtcNow.Year;
                 controller.ViewData["Version"] = "1.0.0";
             }
         }
@@ -170,3 +170,4 @@ namespace VehicleServiceApp.Filters
         }
     }
 }
+

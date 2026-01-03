@@ -51,7 +51,7 @@ namespace VehicleServiceApp.Models
         public string? Notes { get; set; }
 
         [Display(Name = "Kayıt Tarihi")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Güncelleme Tarihi")]
         public DateTime? UpdatedAt { get; set; }
@@ -95,3 +95,4 @@ namespace VehicleServiceApp.Models
         Hybrid = 4
     }
 }
+

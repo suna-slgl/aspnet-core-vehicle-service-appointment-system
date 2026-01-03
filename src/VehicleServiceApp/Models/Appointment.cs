@@ -39,7 +39,7 @@ namespace VehicleServiceApp.Models
         public string? CancellationReason { get; set; }
 
         [Display(Name = "Oluşturulma Tarihi")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Güncelleme Tarihi")]
         public DateTime? UpdatedAt { get; set; }
@@ -126,3 +126,4 @@ namespace VehicleServiceApp.Models
         Cancelled = 4
     }
 }
+

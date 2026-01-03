@@ -191,7 +191,7 @@ namespace VehicleServiceApp.Services
         private async Task<List<AppointmentDetailViewModel>> GetTodayUpcomingAppointmentsAsync()
         {
             var today = DateTime.Today;
-            var currentTime = DateTime.Now.TimeOfDay;
+            var currentTime = DateTime.UtcNow.TimeOfDay;
 
             var appointments = await _context.Appointments
                 .Include(a => a.User)
@@ -219,3 +219,4 @@ namespace VehicleServiceApp.Services
         }
     }
 }
+

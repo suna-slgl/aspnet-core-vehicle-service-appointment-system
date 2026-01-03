@@ -108,7 +108,7 @@ namespace VehicleServiceApp.TagHelpers
 
         private static string GetRelativeTime(DateTime dateTime)
         {
-            var diff = DateTime.Now - dateTime;
+            var diff = DateTime.UtcNow - dateTime;
 
             if (diff.TotalMinutes < 1) return "Az önce";
             if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} dakika önce";
@@ -245,3 +245,4 @@ namespace VehicleServiceApp.TagHelpers
         }
     }
 }
+

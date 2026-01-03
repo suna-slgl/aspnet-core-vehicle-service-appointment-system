@@ -54,7 +54,7 @@ namespace VehicleServiceApp.Services
 
         public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
         {
-            vehicle.CreatedAt = DateTime.Now;
+            vehicle.CreatedAt = DateTime.UtcNow;
             vehicle.IsActive = true;
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
@@ -95,3 +95,4 @@ namespace VehicleServiceApp.Services
         }
     }
 }
+

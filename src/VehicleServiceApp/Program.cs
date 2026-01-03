@@ -190,7 +190,7 @@ using (var scope = app.Services.CreateScope())
                 LastName = "User",
                 EmailConfirmed = true,
                 IsActive = true,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await userManager.CreateAsync(adminUser, "Admin123!");
@@ -213,7 +213,7 @@ using (var scope = app.Services.CreateScope())
                 PhoneNumber = "0532 123 45 67",
                 EmailConfirmed = true,
                 IsActive = true,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await userManager.CreateAsync(demoUser, "Demo123!");
@@ -231,3 +231,4 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+

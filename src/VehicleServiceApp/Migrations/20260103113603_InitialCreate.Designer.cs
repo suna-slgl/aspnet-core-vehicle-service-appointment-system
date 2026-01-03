@@ -12,7 +12,7 @@ using VehicleServiceApp.Data;
 namespace VehicleServiceApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260103111604_InitialCreate")]
+    [Migration("20260103113603_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -117,7 +117,7 @@ namespace VehicleServiceApp.Services
 
         public async Task<Appointment> CreateAppointmentAsync(Appointment appointment)
         {
-            appointment.CreatedAt = DateTime.Now;
+            appointment.CreatedAt = DateTime.UtcNow;
             appointment.Status = AppointmentStatus.Pending;
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -126,7 +126,7 @@ namespace VehicleServiceApp.Services
 
         public async Task<Appointment> UpdateAppointmentAsync(Appointment appointment)
         {
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = DateTime.UtcNow;
             _context.Appointments.Update(appointment);
             await _context.SaveChangesAsync();
             return appointment;
@@ -148,7 +148,7 @@ namespace VehicleServiceApp.Services
             if (appointment == null) return false;
 
             appointment.Status = status;
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = DateTime.UtcNow;
 
             if (!string.IsNullOrEmpty(notes))
                 appointment.TechnicianNotes = notes;
@@ -159,10 +159,10 @@ namespace VehicleServiceApp.Services
             switch (status)
             {
                 case AppointmentStatus.Confirmed:
-                    appointment.ApprovedAt = DateTime.Now;
+                    appointment.ApprovedAt = DateTime.UtcNow;
                     break;
                 case AppointmentStatus.Completed:
-                    appointment.CompletedAt = DateTime.Now;
+                    appointment.CompletedAt = DateTime.UtcNow;
                     break;
             }
 
@@ -176,7 +176,7 @@ namespace VehicleServiceApp.Services
             if (appointment == null) return false;
 
             appointment.TechnicianId = technicianId;
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
         }
@@ -238,3 +238,4 @@ namespace VehicleServiceApp.Services
         }
     }
 }
+
