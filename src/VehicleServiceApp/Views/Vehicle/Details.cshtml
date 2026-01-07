@@ -1,4 +1,4 @@
-@model Vehicle
+@model VehicleServiceApp.ViewModels.VehicleDetailViewModel
 @{
     ViewData["Title"] = $"{Model.Brand} {Model.Model} - Araç Detayı";
 }
@@ -106,15 +106,8 @@
                 <div class="row text-muted small">
                     <div class="col-md-6">
                         <i class="bi bi-calendar-plus me-1"></i>
-                        Oluşturulma: <datetime-display date="@Model.CreatedAt" format="long"></datetime-display>
+                        Oluşturulma: <datetime value="@Model.CreatedAt" format="long" show-time="true"></datetime>
                     </div>
-                    @if (Model.UpdatedAt.HasValue)
-                    {
-                        <div class="col-md-6">
-                            <i class="bi bi-calendar-check me-1"></i>
-                            Son Güncelleme: <datetime-display date="@Model.UpdatedAt.Value" format="long"></datetime-display>
-                        </div>
-                    }
                 </div>
             </div>
             <div class="card-footer bg-white">
@@ -141,17 +134,17 @@
                 <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Servis Geçmişi</h5>
             </div>
             <div class="card-body">
-                @if (Model.Appointments != null && Model.Appointments.Any())
+                @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
                 {
                     <div class="list-group list-group-flush">
-                        @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate).Take(5))
+                            @foreach (var appointment in Model.RecentAppointments.OrderByDescending(a => a.AppointmentDate))
                         {
                             <div class="list-group-item px-0">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <h6 class="mb-1">@appointment.ServiceType?.Name</h6>
+                                        <h6 class="mb-1">@appointment.ServiceTypeName</h6>
                                         <small class="text-muted">
-                                            <datetime-display date="@appointment.AppointmentDate" format="short"></datetime-display>
+                                            <datetime value="@appointment.AppointmentDate" format="short"></datetime>
                                         </small>
                                     </div>
                                     <appointment-status status="@appointment.Status"></appointment-status>
@@ -160,11 +153,11 @@
                         }
                     </div>
                     
-                    @if (Model.Appointments.Count > 5)
+                    @if (Model.TotalAppointments > 5)
                     {
                         <div class="text-center mt-3">
                             <a asp-controller="Appointment" asp-action="Index" class="btn btn-sm btn-outline-primary">
-                                Tümünü Gör (@Model.Appointments.Count)
+                                Tümünü Gör (@Model.TotalAppointments)
                             </a>
                         </div>
                     }

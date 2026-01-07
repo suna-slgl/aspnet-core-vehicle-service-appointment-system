@@ -161,22 +161,19 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
                                                      style="width: 32px; height: 32px; font-size: 0.8rem;">
-                                                    @appointment.User?.FirstName?.FirstOrDefault()@appointment.User?.LastName?.FirstOrDefault()
+                                                    @appointment.CustomerName?.FirstOrDefault()
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold">@appointment.User?.FirstName @appointment.User?.LastName</div>
-                                                    <small class="text-muted">@appointment.User?.Email</small>
+                                                    <div class="fw-bold">@appointment.CustomerName</div>
+                                                    <small class="text-muted">@appointment.CustomerEmail</small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="fw-bold">@appointment.Vehicle?.Brand @appointment.Vehicle?.Model</div>
-                                            <small class="text-muted">@appointment.Vehicle?.LicensePlate</small>
+                                            <div class="fw-bold">@appointment.VehicleInfo</div>
                                         </td>
                                         <td>
-                                            <span class="badge" style="background-color: @(appointment.ServiceType?.ColorCode ?? "#6c757d")">
-                                                @appointment.ServiceType?.Name
-                                            </span>
+                                            <span class="badge bg-secondary">@appointment.ServiceTypeName</span>
                                         </td>
                                         <td>
                                             <div>@appointment.AppointmentDate.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</div>

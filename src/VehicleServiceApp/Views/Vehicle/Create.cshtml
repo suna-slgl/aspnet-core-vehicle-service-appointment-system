@@ -10,8 +10,15 @@
                 <h5 class="mb-0"><i class="bi bi-car-front me-2"></i>Yeni Araç Ekle</h5>
             </div>
             <div class="card-body p-4">
-                <form asp-action="Create" method="post">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -142,8 +149,16 @@
                                     FuelType.LPG => "bi-fire",
                                     _ => "bi-fuel-pump"
                                 };
+                                var isChecked = Model != null && Model.FuelType == fuelType;
                                 <div class="col-6 col-md-4 col-lg-2">
-                                    <input type="radio" class="btn-check" name="FuelType" id="fuel_@fuelType" value="@((int)fuelType)" />
+                                    @if (isChecked)
+                                    {
+                                        <input asp-for="FuelType" class="btn-check" type="radio" id="fuel_@fuelType" value="@((int)fuelType)" checked />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="FuelType" class="btn-check" type="radio" id="fuel_@fuelType" value="@((int)fuelType)" />
+                                    }
                                     <label class="btn btn-outline-secondary w-100" for="fuel_@fuelType">
                                         <i class="bi @fuelIcon me-1"></i>@fuelName
                                     </label>

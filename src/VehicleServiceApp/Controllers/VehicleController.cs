@@ -129,45 +129,45 @@ namespace VehicleServiceApp.Controllers
         // POST: Vehicle/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VehicleCreateViewModel model)
+        public async Task<IActionResult> Create(VehicleCreateViewModel input)
         {
             if (ModelState.IsValid)
             {
                 // Check for duplicate license plate
-                if (await _vehicleService.IsLicensePlateExistsAsync(model.LicensePlate))
+                if (await _vehicleService.IsLicensePlateExistsAsync(input.LicensePlate))
                 {
                     ModelState.AddModelError("LicensePlate", "Bu plaka sistemde zaten kayıtlı.");
                     ViewData["Title"] = "Yeni Araç Ekle";
-                    return View(model);
+                    return View(input);
                 }
 
                 var userId = _userManager.GetUserId(User);
 
                 var vehicle = new Vehicle
                 {
-                    LicensePlate = model.LicensePlate.ToUpper(),
-                    Brand = model.Brand,
-                    Model = model.Model,
-                    Year = model.Year,
-                    Color = model.Color,
-                    Mileage = model.Mileage,
-                    FuelType = model.FuelType,
-                    Notes = model.Notes,
+                    LicensePlate = input.LicensePlate.ToUpper(),
+                    Brand = input.Brand,
+                    Model = input.Model,
+                    Year = input.Year,
+                    Color = input.Color,
+                    Mileage = input.Mileage,
+                    FuelType = input.FuelType,
+                    Notes = input.Notes,
                     UserId = userId!
                 };
 
                 // Handle file upload
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (input.ImageFile != null && input.ImageFile.Length > 0)
                 {
                     try
                     {
-                        vehicle.ImagePath = await _fileService.UploadFileAsync(model.ImageFile, "vehicles");
+                        vehicle.ImagePath = await _fileService.UploadFileAsync(input.ImageFile, "vehicles");
                     }
                     catch (ArgumentException ex)
                     {
                         ModelState.AddModelError("ImageFile", ex.Message);
                         ViewData["Title"] = "Yeni Araç Ekle";
-                        return View(model);
+                        return View(input);
                     }
                 }
 
@@ -175,9 +175,14 @@ namespace VehicleServiceApp.Controllers
                 TempData["Success"] = "Araç başarıyla eklendi.";
                 return RedirectToAction(nameof(Index));
             }
-
+            // Collect model errors to help diagnose why it didn't save
+            var allErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).Where(m => !string.IsNullOrWhiteSpace(m));
+            if (allErrors.Any())
+            {
+                TempData["Error"] = string.Join(" | ", allErrors);
+            }
             ViewData["Title"] = "Yeni Araç Ekle";
-            return View(model);
+            return View(input);
         }
 
         // GET: Vehicle/Edit/5
@@ -213,9 +218,9 @@ namespace VehicleServiceApp.Controllers
         // POST: Vehicle/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, VehicleCreateViewModel model)
+        public async Task<IActionResult> Edit(int id, VehicleCreateViewModel input)
         {
-            if (id != model.Id)
+            if (id != input.Id)
             {
                 return NotFound();
             }
@@ -232,24 +237,24 @@ namespace VehicleServiceApp.Controllers
                 }
 
                 // Check for duplicate license plate
-                if (await _vehicleService.IsLicensePlateExistsAsync(model.LicensePlate, id))
+                if (await _vehicleService.IsLicensePlateExistsAsync(input.LicensePlate, id))
                 {
                     ModelState.AddModelError("LicensePlate", "Bu plaka sistemde zaten kayıtlı.");
                     ViewData["Title"] = "Araç Düzenle";
-                    return View(model);
+                    return View(input);
                 }
 
-                vehicle.LicensePlate = model.LicensePlate.ToUpper();
-                vehicle.Brand = model.Brand;
-                vehicle.Model = model.Model;
-                vehicle.Year = model.Year;
-                vehicle.Color = model.Color;
-                vehicle.Mileage = model.Mileage;
-                vehicle.FuelType = model.FuelType;
-                vehicle.Notes = model.Notes;
+                vehicle.LicensePlate = input.LicensePlate.ToUpper();
+                vehicle.Brand = input.Brand;
+                vehicle.Model = input.Model;
+                vehicle.Year = input.Year;
+                vehicle.Color = input.Color;
+                vehicle.Mileage = input.Mileage;
+                vehicle.FuelType = input.FuelType;
+                vehicle.Notes = input.Notes;
 
                 // Handle file upload
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (input.ImageFile != null && input.ImageFile.Length > 0)
                 {
                     try
                     {
@@ -259,13 +264,13 @@ namespace VehicleServiceApp.Controllers
                             await _fileService.DeleteFileAsync(vehicle.ImagePath);
                         }
 
-                        vehicle.ImagePath = await _fileService.UploadFileAsync(model.ImageFile, "vehicles");
+                        vehicle.ImagePath = await _fileService.UploadFileAsync(input.ImageFile, "vehicles");
                     }
                     catch (ArgumentException ex)
                     {
                         ModelState.AddModelError("ImageFile", ex.Message);
                         ViewData["Title"] = "Araç Düzenle";
-                        return View(model);
+                        return View(input);
                     }
                 }
 
@@ -275,7 +280,7 @@ namespace VehicleServiceApp.Controllers
             }
 
             ViewData["Title"] = "Araç Düzenle";
-            return View(model);
+            return View(input);
         }
 
         // POST: Vehicle/Delete/5

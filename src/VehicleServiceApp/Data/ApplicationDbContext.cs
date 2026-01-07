@@ -43,8 +43,10 @@ namespace VehicleServiceApp.Data
                 entity.Property(e => e.ImagePath).HasMaxLength(500);
                 entity.Property(e => e.Notes).HasMaxLength(500);
 
-                // Index for license plate uniqueness
-                entity.HasIndex(e => e.LicensePlate).IsUnique();
+                    // Index for license plate uniqueness (only for active vehicles)
+                    entity.HasIndex(e => e.LicensePlate)
+                        .IsUnique()
+                        .HasFilter("[IsActive] = 1");
 
                 // Relationship with ApplicationUser
                 entity.HasOne(e => e.User)
