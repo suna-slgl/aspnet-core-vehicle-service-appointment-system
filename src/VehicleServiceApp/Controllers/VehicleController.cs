@@ -129,45 +129,45 @@ namespace VehicleServiceApp.Controllers
         // POST: Vehicle/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VehicleCreateViewModel model)
+        public async Task<IActionResult> Create(VehicleCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
                 // Check for duplicate license plate
-                if (await _vehicleService.IsLicensePlateExistsAsync(model.LicensePlate))
+                if (await _vehicleService.IsLicensePlateExistsAsync(viewModel.LicensePlate))
                 {
                     ModelState.AddModelError("LicensePlate", "Bu plaka sistemde zaten kayıtlı.");
                     ViewData["Title"] = "Yeni Araç Ekle";
-                    return View(model);
+                    return View(viewModel);
                 }
 
                 var userId = _userManager.GetUserId(User);
 
                 var vehicle = new Vehicle
                 {
-                    LicensePlate = model.LicensePlate.ToUpper(),
-                    Brand = model.Brand,
-                    Model = model.Model,
-                    Year = model.Year,
-                    Color = model.Color,
-                    Mileage = model.Mileage,
-                    FuelType = model.FuelType,
-                    Notes = model.Notes,
+                    LicensePlate = viewModel.LicensePlate.ToUpper(),
+                    Brand = viewModel.Brand,
+                    Model = viewModel.Model,
+                    Year = viewModel.Year,
+                    Color = viewModel.Color,
+                    Mileage = viewModel.Mileage,
+                    FuelType = viewModel.FuelType,
+                    Notes = viewModel.Notes,
                     UserId = userId!
                 };
 
                 // Handle file upload
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
                 {
                     try
                     {
-                        vehicle.ImagePath = await _fileService.UploadFileAsync(model.ImageFile, "vehicles");
+                        vehicle.ImagePath = await _fileService.UploadFileAsync(viewModel.ImageFile, "vehicles");
                     }
                     catch (ArgumentException ex)
                     {
                         ModelState.AddModelError("ImageFile", ex.Message);
                         ViewData["Title"] = "Yeni Araç Ekle";
-                        return View(model);
+                        return View(viewModel);
                     }
                 }
 
@@ -177,7 +177,7 @@ namespace VehicleServiceApp.Controllers
             }
 
             ViewData["Title"] = "Yeni Araç Ekle";
-            return View(model);
+            return View(viewModel);
         }
 
         // GET: Vehicle/Edit/5
@@ -213,9 +213,9 @@ namespace VehicleServiceApp.Controllers
         // POST: Vehicle/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, VehicleCreateViewModel model)
+        public async Task<IActionResult> Edit(int id, VehicleCreateViewModel viewModel)
         {
-            if (id != model.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
@@ -232,24 +232,24 @@ namespace VehicleServiceApp.Controllers
                 }
 
                 // Check for duplicate license plate
-                if (await _vehicleService.IsLicensePlateExistsAsync(model.LicensePlate, id))
+                if (await _vehicleService.IsLicensePlateExistsAsync(viewModel.LicensePlate, id))
                 {
                     ModelState.AddModelError("LicensePlate", "Bu plaka sistemde zaten kayıtlı.");
                     ViewData["Title"] = "Araç Düzenle";
-                    return View(model);
+                    return View(viewModel);
                 }
 
-                vehicle.LicensePlate = model.LicensePlate.ToUpper();
-                vehicle.Brand = model.Brand;
-                vehicle.Model = model.Model;
-                vehicle.Year = model.Year;
-                vehicle.Color = model.Color;
-                vehicle.Mileage = model.Mileage;
-                vehicle.FuelType = model.FuelType;
-                vehicle.Notes = model.Notes;
+                vehicle.LicensePlate = viewModel.LicensePlate.ToUpper();
+                vehicle.Brand = viewModel.Brand;
+                vehicle.Model = viewModel.Model;
+                vehicle.Year = viewModel.Year;
+                vehicle.Color = viewModel.Color;
+                vehicle.Mileage = viewModel.Mileage;
+                vehicle.FuelType = viewModel.FuelType;
+                vehicle.Notes = viewModel.Notes;
 
                 // Handle file upload
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
                 {
                     try
                     {
@@ -259,13 +259,13 @@ namespace VehicleServiceApp.Controllers
                             await _fileService.DeleteFileAsync(vehicle.ImagePath);
                         }
 
-                        vehicle.ImagePath = await _fileService.UploadFileAsync(model.ImageFile, "vehicles");
+                        vehicle.ImagePath = await _fileService.UploadFileAsync(viewModel.ImageFile, "vehicles");
                     }
                     catch (ArgumentException ex)
                     {
                         ModelState.AddModelError("ImageFile", ex.Message);
                         ViewData["Title"] = "Araç Düzenle";
-                        return View(model);
+                        return View(viewModel);
                     }
                 }
 
@@ -275,7 +275,7 @@ namespace VehicleServiceApp.Controllers
             }
 
             ViewData["Title"] = "Araç Düzenle";
-            return View(model);
+            return View(viewModel);
         }
 
         // POST: Vehicle/Delete/5

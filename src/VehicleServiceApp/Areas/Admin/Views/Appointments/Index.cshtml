@@ -36,7 +36,7 @@
                     <option value="">Tümü</option>
                     @if (ViewBag.Technicians != null)
                     {
-                        @foreach (var tech in ViewBag.Technicians as IEnumerable<Technician>)
+                        @foreach (var tech in (ViewBag.Technicians as IEnumerable<Technician>)!)
                         {
                             <option value="@tech.Id">@tech.FirstName @tech.LastName</option>
                         }

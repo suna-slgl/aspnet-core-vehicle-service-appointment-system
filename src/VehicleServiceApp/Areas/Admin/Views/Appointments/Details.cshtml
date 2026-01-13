@@ -126,7 +126,7 @@
                                 <option value="">Mevcut Teknisyen</option>
                                 @if (ViewBag.Technicians != null)
                                 {
-                                    @foreach (var tech in ViewBag.Technicians as IEnumerable<Technician>)
+                                    @foreach (var tech in (ViewBag.Technicians as IEnumerable<Technician>)!)
                                     {
                                         var isSelected = Model.TechnicianId == tech.Id;
                                         if (isSelected)
