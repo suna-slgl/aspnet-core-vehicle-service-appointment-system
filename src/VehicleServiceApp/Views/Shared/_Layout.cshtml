@@ -20,7 +20,7 @@
             font-weight: 700;
             color: var(--primary-color) !important;
         }
-        .nav-link {
+        .nav-link {e
             font-weight: 500;
         }
         .nav-link:hover {
@@ -83,34 +83,55 @@
         }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-car-front-fill me-2"></i>Araç Servis
-                </a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Araç Servis
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Araç Servis
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-car-front-fill me-2"></i>Araç Servis
+                    </a>
+                }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house me-1"></i>Ana Sayfa
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">
-                                <i class="bi bi-info-circle me-1"></i>Hakkımızda
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">
-                                <i class="bi bi-telephone me-1"></i>İletişim
-                            </a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated != true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house me-1"></i>Ana Sayfa
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">
+                                    <i class="bi bi-info-circle me-1"></i>Hakkımızda
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">
+                                    <i class="bi bi-telephone me-1"></i>İletişim
+                                </a>
+                            </li>
+                        }
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
@@ -178,7 +199,7 @@
         </div>
     </main>
 
-    <footer class="footer py-5 mt-5">
+    <footer class="footer py-5 mt-auto">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">

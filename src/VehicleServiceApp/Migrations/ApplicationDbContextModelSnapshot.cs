@@ -653,7 +653,8 @@ namespace VehicleServiceApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LicensePlate")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsActive] = 1");
 
                     b.HasIndex("UserId");
 

@@ -37,7 +37,7 @@ namespace VehicleServiceApp.Controllers
         public IActionResult Register(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Dashboard");
 
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["Title"] = "Kayıt Ol";
@@ -88,7 +88,7 @@ namespace VehicleServiceApp.Controllers
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     TempData["Success"] = "Hoş geldiniz! Hesabınız başarıyla oluşturuldu.";
-                    return RedirectToLocal(returnUrl);
+                    return await RedirectAfterSignIn(returnUrl);
                 }
 
                 foreach (var error in result.Errors)
@@ -103,10 +103,10 @@ namespace VehicleServiceApp.Controllers
 
         // GET: Account/Login
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = null)
+        public IActionResult Login(string? returnUrl = null, bool force = false)
         {
-            if (User.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home");
+            if (!force && User.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Dashboard");
 
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["Title"] = "Giriş Yap";
@@ -136,7 +136,7 @@ namespace VehicleServiceApp.Controllers
                 if (result.Succeeded)
                 {
                     TempData["Success"] = "Hoş geldiniz!";
-                    return RedirectToLocal(returnUrl);
+                    return await RedirectAfterSignIn(returnUrl);
                 }
                 if (result.IsLockedOut)
                 {
@@ -294,13 +294,20 @@ namespace VehicleServiceApp.Controllers
             return View();
         }
 
-        private IActionResult RedirectToLocal(string? returnUrl)
+        private async Task<IActionResult> RedirectAfterSignIn(string? returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin"))
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            }
+
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

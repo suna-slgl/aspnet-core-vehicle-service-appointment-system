@@ -114,4 +114,16 @@ namespace VehicleServiceApp.ViewModels
         public List<ServiceType> ServiceTypes { get; set; } = new();
         public List<Technician> Technicians { get; set; } = new();
     }
+
+    /// <summary>
+    /// User dashboard summary ViewModel (non-admin)
+    /// </summary>
+    public class UserDashboardViewModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public int TotalVehicles { get; set; }
+        public int TotalAppointments { get; set; }
+        public int CompletedAppointments { get; set; }
+        public List<AppointmentDetailViewModel> UpcomingAppointments { get; set; } = new();
+    }
 }

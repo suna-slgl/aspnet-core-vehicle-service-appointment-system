@@ -1,4 +1,4 @@
-@model Appointment
+@model AppointmentManageViewModel
 @{
     ViewData["Title"] = "Randevu Detayı #" + Model.Id;
 }
@@ -15,23 +15,17 @@
                     <div class="col-md-6">
                         <h6 class="text-muted mb-2">MÜŞTERİ</h6>
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                 style="width: 50px; height: 50px;">
-                                @Model.User?.FirstName?.FirstOrDefault()@Model.User?.LastName?.FirstOrDefault()
-                            </div>
-                            <div>
-                                <h6 class="mb-0">@Model.User?.FirstName @Model.User?.LastName</h6>
-                                <small class="text-muted">@Model.User?.Email</small><br>
-                                <small class="text-muted">@Model.User?.PhoneNumber</small>
+                            <user-avatar name="@Model.AppointmentDetails?.CustomerName" size="50"></user-avatar>
+                            <div class="ms-3">
+                                <h6 class="mb-0">@Model.AppointmentDetails?.CustomerName</h6>
+                                <small class="text-muted">@Model.AppointmentDetails?.CustomerEmail</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <h6 class="text-muted mb-2">ARAÇ</h6>
                         <div class="border rounded p-3">
-                            <div class="fw-bold">@Model.Vehicle?.Brand @Model.Vehicle?.Model</div>
-                            <div class="badge bg-primary">@Model.Vehicle?.LicensePlate</div>
-                            <div class="small text-muted mt-1">@Model.Vehicle?.Year • @Model.Vehicle?.Color</div>
+                            <div class="fw-bold">@Model.AppointmentDetails?.VehicleInfo</div>
                         </div>
                     </div>
                 </div>
@@ -44,47 +38,47 @@
                         <div class="d-flex align-items-center">
                             <i class="bi bi-calendar3 text-primary fs-4 me-3"></i>
                             <div>
-                                <div class="fw-bold">@Model.AppointmentDate.ToString("dd MMMM yyyy, dddd", new System.Globalization.CultureInfo("tr-TR"))</div>
-                                <div class="text-muted">Saat: @Model.AppointmentTime.ToString(@"hh\:mm")</div>
+                                <div class="fw-bold">@Model.AppointmentDetails?.AppointmentDate.ToString("dd MMMM yyyy, dddd", new System.Globalization.CultureInfo("tr-TR"))</div>
+                                <div class="text-muted">Saat: @Model.AppointmentDetails?.AppointmentTime.ToString(@"hh\:mm")</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <h6 class="text-muted mb-2">HİZMET</h6>
                         <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3" style="background-color: @(Model.ServiceType?.ColorCode)20;">
-                                <i class="@Model.ServiceType?.IconClass fs-4" style="color: @Model.ServiceType?.ColorCode"></i>
+                            <div class="rounded-circle p-2 me-3" style="background-color: @(Model.AppointmentDetails?.ServiceType?.ColorCode)20;">
+                                <i class="@Model.AppointmentDetails?.ServiceType?.IconClass fs-4" style="color: @Model.AppointmentDetails?.ServiceType?.ColorCode"></i>
                             </div>
                             <div>
-                                <div class="fw-bold">@Model.ServiceType?.Name</div>
-                                <div class="text-muted">~@Model.ServiceType?.EstimatedDurationMinutes dk • @Model.ServiceType?.Price.ToString("C0", new System.Globalization.CultureInfo("tr-TR"))</div>
+                                <div class="fw-bold">@Model.AppointmentDetails?.ServiceTypeName</div>
+                                <div class="text-muted">@Model.AppointmentDetails?.ServiceDuration • <price value="@Model.AppointmentDetails!.ServicePrice"></price></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                @if (Model.Technician != null)
+                @if (Model.AppointmentDetails?.Technician != null)
                 {
                     <hr>
                     <h6 class="text-muted mb-2">TEKNİSYEN</h6>
                     <div class="d-flex align-items-center">
                         <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
                              style="width: 40px; height: 40px;">
-                            @Model.Technician.FirstName.FirstOrDefault()@Model.Technician.LastName.FirstOrDefault()
+                            @Model.AppointmentDetails.Technician.FirstName.FirstOrDefault()@Model.AppointmentDetails.Technician.LastName.FirstOrDefault()
                         </div>
                         <div>
-                            <div class="fw-bold">@Model.Technician.FirstName @Model.Technician.LastName</div>
-                            <small class="text-muted">@Model.Technician.Specialization</small>
+                            <div class="fw-bold">@Model.AppointmentDetails.Technician.FirstName @Model.AppointmentDetails.Technician.LastName</div>
+                            <small class="text-muted">@Model.AppointmentDetails.Technician.Specialization</small>
                         </div>
                     </div>
                 }
 
-                @if (!string.IsNullOrEmpty(Model.CustomerNotes))
+                @if (!string.IsNullOrEmpty(Model.AppointmentDetails?.CustomerNotes))
                 {
                     <hr>
                     <h6 class="text-muted mb-2">NOTLAR</h6>
                     <div class="bg-light rounded p-3">
-                        @Model.CustomerNotes
+                        @Model.AppointmentDetails?.CustomerNotes
                     </div>
                 }
             </div>
@@ -164,13 +158,20 @@
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Oluşturulma:</span>
-                    <span>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                    <span>@Model.AppointmentDetails?.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
                 </div>
-                @if (Model.UpdatedAt.HasValue)
+                @if (Model.AppointmentDetails?.ApprovedAt.HasValue == true)
+                {
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Onay:</span>
+                        <span>@Model.AppointmentDetails!.ApprovedAt!.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                    </div>
+                }
+                @if (Model.AppointmentDetails?.CompletedAt.HasValue == true)
                 {
                     <div class="d-flex justify-content-between">
-                        <span class="text-muted">Güncelleme:</span>
-                        <span>@Model.UpdatedAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                        <span class="text-muted">Tamamlanma:</span>
+                        <span>@Model.AppointmentDetails!.CompletedAt!.Value.ToString("dd.MM.yyyy HH:mm")</span>
                     </div>
                 }
             </div>

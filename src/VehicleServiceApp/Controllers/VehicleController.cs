@@ -129,7 +129,7 @@ namespace VehicleServiceApp.Controllers
         // POST: Vehicle/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VehicleCreateViewModel viewModel)
+    public async Task<IActionResult> Create(VehicleCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -175,7 +175,12 @@ namespace VehicleServiceApp.Controllers
                 TempData["Success"] = "Araç başarıyla eklendi.";
                 return RedirectToAction(nameof(Index));
             }
-
+            // Collect model errors to help diagnose why it didn't save
+            var allErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).Where(m => !string.IsNullOrWhiteSpace(m));
+            if (allErrors.Any())
+            {
+                TempData["Error"] = string.Join(" | ", allErrors);
+            }
             ViewData["Title"] = "Yeni Araç Ekle";
             return View(viewModel);
         }

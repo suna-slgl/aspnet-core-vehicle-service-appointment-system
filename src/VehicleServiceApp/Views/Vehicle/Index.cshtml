@@ -1,4 +1,4 @@
-@model IEnumerable<Vehicle>
+@model VehicleServiceApp.ViewModels.VehicleListViewModel
 @{
     ViewData["Title"] = "Araçlarım";
 }
@@ -13,18 +13,26 @@
     </a>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
+@if (TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-@if (Model != null && Model.Any())
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model?.Vehicles != null && Model.Vehicles.Any())
 {
     <div class="row g-4">
-        @foreach (var vehicle in Model)
+        @foreach (var vehicle in Model.Vehicles)
         {
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm hover-shadow">

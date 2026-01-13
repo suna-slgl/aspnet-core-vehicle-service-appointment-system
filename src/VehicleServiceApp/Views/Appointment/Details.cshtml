@@ -1,4 +1,4 @@
-@model Appointment
+@model VehicleServiceApp.ViewModels.AppointmentDetailViewModel
 @{
     ViewData["Title"] = "Randevu Detayı";
     var statusClass = Model.Status switch
@@ -41,7 +41,7 @@
                             <div>
                                 <small class="text-muted d-block">Randevu Tarihi</small>
                                 <strong class="fs-5">
-                                    <datetime-display date="@Model.AppointmentDate" format="long"></datetime-display>
+                                    <datetime value="@Model.AppointmentDate" format="long"></datetime>
                                 </strong>
                             </div>
                         </div>
@@ -64,44 +64,28 @@
                 <!-- Vehicle Info -->
                 <h6 class="fw-bold text-muted mb-3"><i class="bi bi-car-front me-2"></i>ARAÇ BİLGİLERİ</h6>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="border rounded p-3">
-                            <small class="text-muted d-block">Marka / Model</small>
-                            <strong>@Model.Vehicle?.Brand @Model.Vehicle?.Model</strong>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="border rounded p-3">
-                            <small class="text-muted d-block">Plaka</small>
-                            <strong>@Model.Vehicle?.LicensePlate</strong>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="border rounded p-3">
-                            <small class="text-muted d-block">Model Yılı</small>
-                            <strong>@Model.Vehicle?.Year</strong>
+                            <small class="text-muted d-block">Araç</small>
+                            <strong>@Model.VehicleInfo</strong>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Service Info -->
                 <h6 class="fw-bold text-muted mb-3"><i class="bi bi-tools me-2"></i>HİZMET BİLGİLERİ</h6>
-                <div class="card mb-4" style="border-left: 4px solid @(Model.ServiceType?.ColorCode ?? "#6c757d");">
+                <div class="card mb-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h5 class="fw-bold mb-1">
-                                    <i class="@Model.ServiceType?.IconClass me-2"></i>
-                                    @Model.ServiceType?.Name
-                                </h5>
-                                <p class="text-muted mb-2">@Model.ServiceType?.Description</p>
+                                <h5 class="fw-bold mb-1">@Model.ServiceTypeName</h5>
                                 <span class="badge bg-secondary">
-                                    <i class="bi bi-clock me-1"></i>Tahmini Süre: ~@Model.ServiceType?.EstimatedDurationMinutes dakika
+                                    <i class="bi bi-clock me-1"></i>Tahmini Süre: @Model.ServiceDuration
                                 </span>
                             </div>
                             <div class="text-end">
                                 <div class="fs-4 fw-bold text-primary">
-                                    <price-display amount="@(Model.ServiceType?.Price ?? 0)"></price-display>
+                                    <price value="@Model.ServicePrice"></price>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +93,7 @@
                 </div>
                 
                 <!-- Technician Info -->
-                @if (Model.Technician != null)
+                @if (!string.IsNullOrEmpty(Model.TechnicianName))
                 {
                     <h6 class="fw-bold text-muted mb-3"><i class="bi bi-person-badge me-2"></i>TEKNİSYEN BİLGİLERİ</h6>
                     <div class="card mb-4">
@@ -117,11 +101,10 @@
                             <div class="d-flex align-items-center">
                                 <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
                                      style="width: 50px; height: 50px;">
-                                    @Model.Technician.FirstName.FirstOrDefault()@Model.Technician.LastName.FirstOrDefault()
+                                    @Model.TechnicianName?.FirstOrDefault()
                                 </div>
                                 <div>
-                                    <h6 class="mb-0 fw-bold">@Model.Technician.FirstName @Model.Technician.LastName</h6>
-                                    <small class="text-muted">@Model.Technician.Specialization</small>
+                                    <h6 class="mb-0 fw-bold">@Model.TechnicianName</h6>
                                 </div>
                             </div>
                         </div>
@@ -141,7 +124,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="small text-muted">
                         <i class="bi bi-calendar-plus me-1"></i>
-                        Oluşturulma: <datetime-display date="@Model.CreatedAt" format="long"></datetime-display>
+                        Oluşturulma: <datetime value="@Model.CreatedAt" format="long" show-time="true"></datetime>
                     </div>
                     <div>
                         @if (Model.Status == AppointmentStatus.Pending)

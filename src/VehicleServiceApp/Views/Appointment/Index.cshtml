@@ -1,4 +1,4 @@
-@model IEnumerable<Appointment>
+@model VehicleServiceApp.ViewModels.AppointmentListViewModel
 @{
     ViewData["Title"] = "Randevularım";
 }
@@ -46,11 +46,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">Başlangıç Tarihi</label>
-                <input type="date" name="startDate" class="form-control" />
+                <input type="date" name="dateFrom" class="form-control" />
             </div>
             <div class="col-md-3">
                 <label class="form-label">Bitiş Tarihi</label>
-                <input type="date" name="endDate" class="form-control" />
+                <input type="date" name="dateTo" class="form-control" />
             </div>
             <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-outline-primary w-100">
@@ -61,14 +61,14 @@
     </div>
 </div>
 
-@if (Model != null && Model.Any())
+@if (Model?.Appointments != null && Model.Appointments.Any())
 {
     <!-- Stats -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
             <div class="card bg-warning bg-opacity-10 border-warning">
                 <div class="card-body text-center">
-                    <h3 class="fw-bold text-warning mb-0">@Model.Count(a => a.Status == AppointmentStatus.Pending)</h3>
+                    <h3 class="fw-bold text-warning mb-0">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Pending)</h3>
                     <small class="text-muted">Beklemede</small>
                 </div>
             </div>
@@ -76,7 +76,7 @@
         <div class="col-6 col-md-3">
             <div class="card bg-primary bg-opacity-10 border-primary">
                 <div class="card-body text-center">
-                    <h3 class="fw-bold text-primary mb-0">@Model.Count(a => a.Status == AppointmentStatus.Confirmed)</h3>
+                    <h3 class="fw-bold text-primary mb-0">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Confirmed)</h3>
                     <small class="text-muted">Onaylandı</small>
                 </div>
             </div>
@@ -84,7 +84,7 @@
         <div class="col-6 col-md-3">
             <div class="card bg-info bg-opacity-10 border-info">
                 <div class="card-body text-center">
-                    <h3 class="fw-bold text-info mb-0">@Model.Count(a => a.Status == AppointmentStatus.InProgress)</h3>
+                    <h3 class="fw-bold text-info mb-0">@Model.Appointments.Count(a => a.Status == AppointmentStatus.InProgress)</h3>
                     <small class="text-muted">İşlemde</small>
                 </div>
             </div>
@@ -92,7 +92,7 @@
         <div class="col-6 col-md-3">
             <div class="card bg-success bg-opacity-10 border-success">
                 <div class="card-body text-center">
-                    <h3 class="fw-bold text-success mb-0">@Model.Count(a => a.Status == AppointmentStatus.Completed)</h3>
+                    <h3 class="fw-bold text-success mb-0">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Completed)</h3>
                     <small class="text-muted">Tamamlandı</small>
                 </div>
             </div>
@@ -114,29 +114,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var appointment in Model.OrderByDescending(a => a.AppointmentDate))
+                    @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate))
                     {
                         <tr>
                             <td>
                                 <div class="fw-bold">
-                                    <datetime-display date="@appointment.AppointmentDate" format="short"></datetime-display>
+                                    <datetime value="@appointment.AppointmentDate" format="short"></datetime>
                                 </div>
                                 <small class="text-muted">@appointment.AppointmentTime.ToString(@"hh\:mm")</small>
                             </td>
                             <td>
-                                <div class="fw-bold">@appointment.Vehicle?.Brand @appointment.Vehicle?.Model</div>
-                                <small class="text-muted">@appointment.Vehicle?.LicensePlate</small>
+                                <div class="fw-bold">@appointment.VehicleInfo</div>
                             </td>
                             <td>
-                                <span class="badge" style="background-color: @(appointment.ServiceType?.ColorCode ?? "#6c757d")">
-                                    <i class="@appointment.ServiceType?.IconClass me-1"></i>
-                                    @appointment.ServiceType?.Name
-                                </span>
+                                <span class="badge bg-secondary">@appointment.ServiceTypeName</span>
                             </td>
                             <td>
-                                @if (appointment.Technician != null)
+                                @if (!string.IsNullOrEmpty(appointment.TechnicianName))
                                 {
-                                    <span>@appointment.Technician.FirstName @appointment.Technician.LastName</span>
+                                    <span>@appointment.TechnicianName</span>
                                 }
                                 else
                                 {
@@ -144,7 +140,7 @@
                                 }
                             </td>
                             <td>
-                                <price-display amount="@(appointment.ServiceType?.Price ?? 0)"></price-display>
+                                <price value="@appointment.ServicePrice" css-class=""></price>
                             </td>
                             <td>
                                 <appointment-status status="@appointment.Status"></appointment-status>
