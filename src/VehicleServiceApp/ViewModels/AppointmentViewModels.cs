@@ -17,6 +17,9 @@ namespace VehicleServiceApp.ViewModels
         [Display(Name = "Servis Türü")]
         public int ServiceTypeId { get; set; }
 
+        [Display(Name = "Teknisyen")]
+        public int? TechnicianId { get; set; }
+
         [Required(ErrorMessage = "Randevu tarihi zorunludur")]
         [Display(Name = "Randevu Tarihi")]
         [DataType(DataType.Date)]

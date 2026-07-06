@@ -16,17 +16,20 @@ namespace VehicleServiceApp.Controllers
         private readonly IAppointmentService _appointmentService;
         private readonly IVehicleService _vehicleService;
         private readonly IServiceTypeService _serviceTypeService;
+        private readonly ITechnicianService _technicianService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AppointmentController(
             IAppointmentService appointmentService,
             IVehicleService vehicleService,
             IServiceTypeService serviceTypeService,
+            ITechnicianService technicianService,
             UserManager<ApplicationUser> userManager)
         {
             _appointmentService = appointmentService;
             _vehicleService = vehicleService;
             _serviceTypeService = serviceTypeService;
+            _technicianService = technicianService;
             _userManager = userManager;
         }
 
@@ -133,11 +136,13 @@ namespace VehicleServiceApp.Controllers
 
             var serviceTypes = await _serviceTypeService.GetActiveServiceTypesAsync();
             var availableSlots = await _appointmentService.GetAvailableTimeSlotsAsync(DateTime.Today.AddDays(1));
+            var technicians = await _technicianService.GetAvailableTechniciansAsync(DateTime.Today.AddDays(1), new TimeSpan(9, 0, 0));
 
             var viewModel = new AppointmentCreateViewModel
             {
                 AvailableVehicles = vehicles.ToList(),
                 AvailableServiceTypes = serviceTypes.ToList(),
+                AvailableTechnicians = technicians.ToList(),
                 AvailableTimeSlots = availableSlots.ToList()
             };
 
@@ -173,6 +178,23 @@ namespace VehicleServiceApp.Controllers
                     {
                         ModelState.AddModelError("AppointmentTime", "Bu tarih ve saat için uygun randevu yeri bulunmamaktadır.");
                     }
+
+                    if (model.TechnicianId.HasValue)
+                    {
+                        var technician = await _technicianService.GetTechnicianByIdAsync(model.TechnicianId.Value);
+                        if (technician == null || !technician.IsActive)
+                        {
+                            ModelState.AddModelError("TechnicianId", "Geçersiz teknisyen seçimi.");
+                        }
+                        else if (technician.WorkStartTime > time || technician.WorkEndTime <= time)
+                        {
+                            ModelState.AddModelError("TechnicianId", "Seçilen teknisyen bu saatte çalışmıyor.");
+                        }
+                        else if (!await _appointmentService.IsTimeSlotAvailableAsync(model.AppointmentDate, time, model.TechnicianId.Value))
+                        {
+                            ModelState.AddModelError("TechnicianId", "Seçilen teknisyen bu tarih ve saatte uygun değil.");
+                        }
+                    }
                 }
 
                 if (ModelState.IsValid)
@@ -182,6 +204,7 @@ namespace VehicleServiceApp.Controllers
                         UserId = userId!,
                         VehicleId = model.VehicleId,
                         ServiceTypeId = model.ServiceTypeId,
+                        TechnicianId = model.TechnicianId,
                         AppointmentDate = model.AppointmentDate.Date,
                         AppointmentTime = time,
                         CustomerNotes = model.CustomerNotes,
