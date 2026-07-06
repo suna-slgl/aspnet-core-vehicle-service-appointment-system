@@ -155,8 +155,11 @@ using (var scope = app.Services.CreateScope())
         }
 
         // Seed Admin User
-        var adminEmail = "admin@aracservis.com";
-        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        var adminEmail = builder.Configuration["SeedUsers:Admin:Email"];
+        var adminPassword = builder.Configuration["SeedUsers:Admin:Password"];
+        if (!string.IsNullOrWhiteSpace(adminEmail) &&
+            !string.IsNullOrWhiteSpace(adminPassword) &&
+            await userManager.FindByEmailAsync(adminEmail) == null)
         {
             var adminUser = new ApplicationUser
             {
@@ -169,7 +172,7 @@ using (var scope = app.Services.CreateScope())
                 CreatedAt = DateTime.Now
             };
 
-            var result = await userManager.CreateAsync(adminUser, "Admin123!");
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");
@@ -177,8 +180,11 @@ using (var scope = app.Services.CreateScope())
         }
 
         // Seed Demo User
-        var demoEmail = "demo@aracservis.com";
-        if (await userManager.FindByEmailAsync(demoEmail) == null)
+        var demoEmail = builder.Configuration["SeedUsers:Demo:Email"];
+        var demoPassword = builder.Configuration["SeedUsers:Demo:Password"];
+        if (!string.IsNullOrWhiteSpace(demoEmail) &&
+            !string.IsNullOrWhiteSpace(demoPassword) &&
+            await userManager.FindByEmailAsync(demoEmail) == null)
         {
             var demoUser = new ApplicationUser
             {
@@ -192,7 +198,7 @@ using (var scope = app.Services.CreateScope())
                 CreatedAt = DateTime.Now
             };
 
-            var result = await userManager.CreateAsync(demoUser, "Demo123!");
+            var result = await userManager.CreateAsync(demoUser, demoPassword);
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(demoUser, "User");
