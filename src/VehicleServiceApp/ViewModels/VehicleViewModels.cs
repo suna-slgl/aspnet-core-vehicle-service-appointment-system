@@ -54,45 +54,6 @@ namespace VehicleServiceApp.ViewModels
     }
 
     /// <summary>
-    /// ViewModel for editing vehicles - same as create but with Id
-    /// </summary>
-    public class VehicleEditViewModel
-    {
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "Plaka alanı zorunludur")]
-        [StringLength(15, MinimumLength = 5, ErrorMessage = "Plaka 5-15 karakter arasında olmalıdır")]
-        [Display(Name = "Plaka")]
-        public string LicensePlate { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Marka alanı zorunludur")]
-        [StringLength(50, ErrorMessage = "Marka en fazla 50 karakter olabilir")]
-        [Display(Name = "Marka")]
-        public string Brand { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Model alanı zorunludur")]
-        [StringLength(50, ErrorMessage = "Model en fazla 50 karakter olabilir")]
-        [Display(Name = "Model")]
-        public string Model { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Yıl alanı zorunludur")]
-        [Range(1900, 2030, ErrorMessage = "Geçerli bir yıl giriniz")]
-        [Display(Name = "Model Yılı")]
-        public int Year { get; set; }
-
-        [StringLength(20)]
-        [Display(Name = "Renk")]
-        public string? Color { get; set; }
-
-        [Display(Name = "Kilometre")]
-        [Range(0, 2000000, ErrorMessage = "Geçerli bir kilometre değeri giriniz")]
-        public int? Mileage { get; set; }
-
-        [Display(Name = "Yakıt Türü")]
-        public FuelType FuelType { get; set; }
-    }
-
-    /// <summary>
     /// ViewModel for displaying vehicle details
     /// </summary>
     public class VehicleDetailViewModel
