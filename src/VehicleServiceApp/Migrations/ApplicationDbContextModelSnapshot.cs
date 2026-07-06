@@ -274,6 +274,9 @@ namespace VehicleServiceApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ServiceTypeId")
                         .HasColumnType("int");
 

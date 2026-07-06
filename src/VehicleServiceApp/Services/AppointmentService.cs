@@ -191,7 +191,8 @@ namespace VehicleServiceApp.Services
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null) return false;
 
-            _context.Appointments.Remove(appointment);
+            appointment.IsActive = false;
+            appointment.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
             return true;
         }

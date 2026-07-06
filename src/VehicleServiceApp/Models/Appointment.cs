@@ -50,6 +50,9 @@ namespace VehicleServiceApp.Models
         [Display(Name = "Tamamlanma Tarihi")]
         public DateTime? CompletedAt { get; set; }
 
+        [Display(Name = "Aktif Mi?")]
+        public bool IsActive { get; set; } = true;
+
         // Foreign Keys
         [Required(ErrorMessage = "Kullanıcı seçimi zorunludur")]
         public string UserId { get; set; } = string.Empty;

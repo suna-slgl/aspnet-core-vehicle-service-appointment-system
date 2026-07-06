@@ -85,6 +85,7 @@ namespace VehicleServiceApp.Data
                 entity.Property(e => e.CustomerNotes).HasMaxLength(500);
                 entity.Property(e => e.TechnicianNotes).HasMaxLength(500);
                 entity.Property(e => e.CancellationReason).HasMaxLength(500);
+                entity.HasQueryFilter(e => e.IsActive);
 
                 // Relationship with ApplicationUser
                 entity.HasOne(e => e.User)
