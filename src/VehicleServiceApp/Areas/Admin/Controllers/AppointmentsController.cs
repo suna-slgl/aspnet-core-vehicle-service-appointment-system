@@ -138,6 +138,7 @@ namespace VehicleServiceApp.Areas.Admin.Controllers
             }
 
             var technicians = await _technicianService.GetActiveTechniciansAsync();
+            ViewBag.Technicians = technicians;
 
             var viewModel = new AppointmentManageViewModel
             {
@@ -170,6 +171,41 @@ namespace VehicleServiceApp.Areas.Admin.Controllers
 
             ViewData["Title"] = "Randevu Detayı";
             return View(viewModel);
+        }
+
+        // POST: Admin/Appointments/UpdateStatus/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, AppointmentStatus status, int? technicianId)
+        {
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            if (appointment == null)
+            {
+                TempData["Error"] = "Randevu bulunamadÄ±.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!IsAllowedStatusTransition(appointment.Status, status))
+            {
+                TempData["Error"] = "SeÃ§ilen durum geÃ§iÅŸi geÃ§erli deÄŸil.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            if (technicianId.HasValue)
+            {
+                var technician = await _technicianService.GetTechnicianByIdAsync(technicianId.Value);
+                if (technician == null || !technician.IsActive)
+                {
+                    TempData["Error"] = "GeÃ§ersiz teknisyen seÃ§imi.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                await _appointmentService.AssignTechnicianAsync(id, technicianId.Value);
+            }
+
+            await _appointmentService.UpdateStatusAsync(id, status);
+            TempData["Success"] = "Randevu durumu gÃ¼ncellendi.";
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         // POST: Admin/Appointments/Approve/5
