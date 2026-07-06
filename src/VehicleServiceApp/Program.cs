@@ -141,8 +141,10 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Apply migrations
-        context.Database.Migrate();
+        if (builder.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
+        {
+            context.Database.Migrate();
+        }
 
         // Seed Roles
         if (!await roleManager.RoleExistsAsync("Admin"))
