@@ -17,19 +17,22 @@ namespace VehicleServiceApp.Controllers
         private readonly IFileService _fileService;
         private readonly IVehicleService _vehicleService;
         private readonly IAppointmentService _appointmentService;
+        private readonly ILogger<AccountController> _logger;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IFileService fileService,
             IVehicleService vehicleService,
-            IAppointmentService appointmentService)
+            IAppointmentService appointmentService,
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _fileService = fileService;
             _vehicleService = vehicleService;
             _appointmentService = appointmentService;
+            _logger = logger;
         }
 
         // GET: Account/Register
@@ -254,6 +257,96 @@ namespace VehicleServiceApp.Controllers
         {
             ViewData["Title"] = "Şifre Değiştir";
             return View();
+        }
+
+        // GET: Account/ForgotPassword
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            ViewData["Title"] = "Åifremi Unuttum";
+            return View();
+        }
+
+        // POST: Account/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Title"] = "Åifremi Unuttum";
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null && user.IsActive)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetUrl = Url.Action(nameof(ResetPassword), "Account", new
+                {
+                    token,
+                    email = model.Email
+                }, Request.Scheme);
+
+                _logger.LogInformation("Password reset link generated for {Email}: {ResetUrl}", model.Email, resetUrl);
+            }
+
+            TempData["Success"] = "EÄŸer bu email adresi sistemde kayÄ±tlÄ±ysa ÅŸifre sÄ±fÄ±rlama baÄŸlantÄ±sÄ± gÃ¶nderilecektir.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        // GET: Account/ResetPassword
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string? token = null, string? email = null)
+        {
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
+            {
+                TempData["Error"] = "Åifre sÄ±fÄ±rlama baÄŸlantÄ±sÄ± geÃ§ersiz.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            ViewData["Title"] = "Åifre SÄ±fÄ±rla";
+            return View(new ResetPasswordViewModel
+            {
+                Token = token,
+                Email = email
+            });
+        }
+
+        // POST: Account/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Title"] = "Åifre SÄ±fÄ±rla";
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !user.IsActive)
+            {
+                TempData["Success"] = "Åifreniz gÃ¼ncellendiyse yeni ÅŸifrenizle giriÅŸ yapabilirsiniz.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Åifreniz baÅŸarÄ±yla sÄ±fÄ±rlandÄ±. Yeni ÅŸifrenizle giriÅŸ yapabilirsiniz.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            ViewData["Title"] = "Åifre SÄ±fÄ±rla";
+            return View(model);
         }
 
         // POST: Account/ChangePassword

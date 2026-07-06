@@ -130,6 +130,43 @@ namespace VehicleServiceApp.ViewModels
     }
 
     /// <summary>
+    /// ViewModel for requesting a password reset link
+    /// </summary>
+    public class ForgotPasswordViewModel
+    {
+        [Required(ErrorMessage = "Email alanı zorunludur")]
+        [EmailAddress(ErrorMessage = "Geçerli bir email adresi giriniz")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// ViewModel for resetting a forgotten password
+    /// </summary>
+    public class ResetPasswordViewModel
+    {
+        [Required]
+        public string Token { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email alanı zorunludur")]
+        [EmailAddress(ErrorMessage = "Geçerli bir email adresi giriniz")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Yeni şifre zorunludur")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Şifre en az 6 karakter olmalıdır")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Yeni Şifre")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Yeni şifre tekrarı zorunludur")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Yeni Şifre Tekrarı")]
+        [Compare("Password", ErrorMessage = "Şifreler eşleşmiyor")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+
+    /// <summary>
     /// ViewModel for admin user management
     /// </summary>
     public class UserManageViewModel
