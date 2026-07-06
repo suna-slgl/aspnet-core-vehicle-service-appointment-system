@@ -1,0 +1,34 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Test output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Local configuration and databases
+appsettings.Local.json
+appsettings.*.local.json
+*.db
+*.db-shm
+*.db-wal
+
+# OS files
+.DS_Store
+Thumbs.db

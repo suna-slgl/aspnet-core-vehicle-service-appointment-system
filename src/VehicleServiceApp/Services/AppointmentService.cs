@@ -11,10 +11,12 @@ namespace VehicleServiceApp.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAppointmentNotificationService? _notificationService;
 
-        public AppointmentService(ApplicationDbContext context)
+        public AppointmentService(ApplicationDbContext context, IAppointmentNotificationService? notificationService = null)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
@@ -175,6 +177,8 @@ namespace VehicleServiceApp.Services
             appointment.Status = AppointmentStatus.Pending;
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
+            if (_notificationService != null)
+                await _notificationService.SendAppointmentCreatedAsync(appointment.Id);
             return appointment;
         }
 
@@ -222,6 +226,8 @@ namespace VehicleServiceApp.Services
             }
 
             await _context.SaveChangesAsync();
+            if (_notificationService != null)
+                await _notificationService.SendAppointmentStatusChangedAsync(id, status);
             return true;
         }
 

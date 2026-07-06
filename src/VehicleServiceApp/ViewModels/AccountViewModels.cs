@@ -180,5 +180,21 @@ namespace VehicleServiceApp.ViewModels
         public List<string> Roles { get; set; } = new();
         public int VehicleCount { get; set; }
         public int AppointmentCount { get; set; }
+        public List<VehicleDetailViewModel> Vehicles { get; set; } = new();
+        public List<AppointmentDetailViewModel> RecentAppointments { get; set; } = new();
+    }
+
+    /// <summary>
+    /// ViewModel for admin user list
+    /// </summary>
+    public class UserListViewModel
+    {
+        public List<UserManageViewModel> Users { get; set; } = new();
+        public string? SearchTerm { get; set; }
+        public bool? IsActive { get; set; }
+        public int TotalCount { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 15;
+        public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
     }
 }

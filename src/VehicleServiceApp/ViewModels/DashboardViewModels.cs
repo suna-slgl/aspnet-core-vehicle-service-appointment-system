@@ -37,6 +37,9 @@ namespace VehicleServiceApp.ViewModels
         public int MonthlyAppointments { get; set; }
         public int MonthlyCompletedAppointments { get; set; }
         public decimal MonthlyRevenue { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public double CompletionRate { get; set; }
+        public double CancellationRate { get; set; }
 
         // Recent appointments
         public List<AppointmentDetailViewModel> RecentAppointments { get; set; } = new();
@@ -47,6 +50,7 @@ namespace VehicleServiceApp.ViewModels
         // Chart data
         public List<DailyAppointmentData> Last7DaysAppointments { get; set; } = new();
         public List<ServiceTypeStats> ServiceTypeStatistics { get; set; } = new();
+        public List<TechnicianStats> TechnicianStatistics { get; set; } = new();
         public List<PopularServiceViewModel> PopularServices { get; set; } = new();
     }
 
@@ -71,6 +75,17 @@ namespace VehicleServiceApp.ViewModels
         public int AppointmentCount { get; set; }
         public decimal TotalRevenue { get; set; }
         public string? ColorCode { get; set; }
+    }
+
+    /// <summary>
+    /// Technician statistics
+    /// </summary>
+    public class TechnicianStats
+    {
+        public string TechnicianName { get; set; } = string.Empty;
+        public int AppointmentCount { get; set; }
+        public int CompletedCount { get; set; }
+        public decimal TotalRevenue { get; set; }
     }
 
     /// <summary>
@@ -109,6 +124,7 @@ namespace VehicleServiceApp.ViewModels
         // Report results
         public DashboardViewModel? Results { get; set; }
         public List<AppointmentDetailViewModel> DetailedAppointments { get; set; } = new();
+        public List<TechnicianStats> TechnicianStatistics { get; set; } = new();
 
         // Filter options
         public List<ServiceType> ServiceTypes { get; set; } = new();

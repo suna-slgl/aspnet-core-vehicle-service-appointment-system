@@ -81,8 +81,27 @@ namespace VehicleServiceApp.Services.Interfaces
     {
         Task<DashboardViewModel> GetDashboardDataAsync();
         Task<DashboardViewModel> GetReportDataAsync(DateTime startDate, DateTime endDate, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null);
+        Task<List<AppointmentDetailViewModel>> GetReportAppointmentsAsync(DateTime startDate, DateTime endDate, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null);
+        Task<List<TechnicianStats>> GetTechnicianStatsAsync(DateTime? startDate = null, DateTime? endDate = null, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null);
         Task<List<DailyAppointmentData>> GetLast7DaysDataAsync();
         Task<List<ServiceTypeStats>> GetServiceTypeStatsAsync(DateTime? startDate = null, DateTime? endDate = null);
+    }
+
+    /// <summary>
+    /// Interface for outgoing application emails
+    /// </summary>
+    public interface IEmailService
+    {
+        Task SendAsync(string to, string subject, string htmlBody);
+    }
+
+    /// <summary>
+    /// Interface for appointment notification emails
+    /// </summary>
+    public interface IAppointmentNotificationService
+    {
+        Task SendAppointmentCreatedAsync(int appointmentId);
+        Task SendAppointmentStatusChangedAsync(int appointmentId, AppointmentStatus status);
     }
 
     /// <summary>

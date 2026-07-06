@@ -17,6 +17,7 @@ namespace VehicleServiceApp.Controllers
         private readonly IFileService _fileService;
         private readonly IVehicleService _vehicleService;
         private readonly IAppointmentService _appointmentService;
+        private readonly IEmailService _emailService;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(
@@ -25,6 +26,7 @@ namespace VehicleServiceApp.Controllers
             IFileService fileService,
             IVehicleService vehicleService,
             IAppointmentService appointmentService,
+            IEmailService emailService,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
@@ -32,6 +34,7 @@ namespace VehicleServiceApp.Controllers
             _fileService = fileService;
             _vehicleService = vehicleService;
             _appointmentService = appointmentService;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -289,7 +292,16 @@ namespace VehicleServiceApp.Controllers
                     email = model.Email
                 }, Request.Scheme);
 
-                _logger.LogInformation("Password reset link generated for {Email}: {ResetUrl}", model.Email, resetUrl);
+                await _emailService.SendAsync(
+                    model.Email,
+                    "Şifre sıfırlama bağlantısı",
+                    $@"
+<p>Merhaba {user.FullName},</p>
+<p>Şifrenizi sıfırlamak için aşağıdaki bağlantıyı kullanabilirsiniz.</p>
+<p><a href=""{resetUrl}"">Şifremi sıfırla</a></p>
+<p>Bu talebi siz yapmadıysanız bu e-postayı dikkate almayabilirsiniz.</p>");
+
+                _logger.LogInformation("Password reset email queued for {Email}.", model.Email);
             }
 
             TempData["Success"] = "EÄŸer bu email adresi sistemde kayÄ±tlÄ±ysa ÅŸifre sÄ±fÄ±rlama baÄŸlantÄ±sÄ± gÃ¶nderilecektir.";

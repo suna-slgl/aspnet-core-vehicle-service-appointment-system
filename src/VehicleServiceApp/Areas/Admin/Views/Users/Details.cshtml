@@ -1,0 +1,138 @@
+@model UserManageViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">@Model.FullName</h2>
+        <p class="text-muted mb-0">@Model.Email</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+    </a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Hesap Bilgileri</h5>
+                <dl class="row mb-0">
+                    <dt class="col-5">Durum</dt>
+                    <dd class="col-7">
+                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                            @(Model.IsActive ? "Aktif" : "Pasif")
+                        </span>
+                    </dd>
+                    <dt class="col-5">Telefon</dt>
+                    <dd class="col-7">@(Model.PhoneNumber ?? "-")</dd>
+                    <dt class="col-5">Kayıt</dt>
+                    <dd class="col-7">@Model.CreatedAt.ToString("dd.MM.yyyy")</dd>
+                    <dt class="col-5">Roller</dt>
+                    <dd class="col-7">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <span class="badge bg-secondary me-1">@role</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Araçlar</h5>
+                <div class="display-6">@Model.VehicleCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Randevular</h5>
+                <div class="display-6">@Model.AppointmentCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Araç Listesi</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Araç</th>
+                        <th>Yıl</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Vehicles.Any())
+                    {
+                        foreach (var vehicle in Model.Vehicles)
+                        {
+                            <tr>
+                                <td>@vehicle.LicensePlate</td>
+                                <td>@vehicle.VehicleInfo</td>
+                                <td>@vehicle.Year</td>
+                                <td>
+                                    <span class="badge @(vehicle.IsActive ? "bg-success" : "bg-danger")">
+                                        @(vehicle.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Araç kaydı yok.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Son Randevular</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Araç</th>
+                        <th>Hizmet</th>
+                        <th>Teknisyen</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentAppointments.Any())
+                    {
+                        foreach (var appointment in Model.RecentAppointments)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy") @appointment.AppointmentTime.ToString(@"hh\:mm")</td>
+                                <td>@appointment.VehicleInfo</td>
+                                <td>@appointment.ServiceTypeName</td>
+                                <td>@(appointment.TechnicianName ?? "Atanmadı")</td>
+                                <td><span class="badge bg-@appointment.StatusColor">@appointment.StatusDisplay</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Randevu kaydı yok.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

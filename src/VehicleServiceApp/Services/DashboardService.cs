@@ -80,9 +80,86 @@ namespace VehicleServiceApp.Services
 
         public async Task<DashboardViewModel> GetReportDataAsync(DateTime startDate, DateTime endDate, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null)
         {
-            var query = _context.Appointments
+            var appointments = await GetFilteredReportQuery(startDate, endDate, status, serviceTypeId, technicianId)
                 .Include(a => a.ServiceType)
-                .Where(a => a.AppointmentDate >= startDate.Date && a.AppointmentDate <= endDate.Date);
+                .ToListAsync();
+
+            var completedAppointments = appointments.Where(a => a.Status == AppointmentStatus.Completed).ToList();
+            var totalRevenue = completedAppointments.Sum(a => a.ServiceType?.Price ?? 0);
+
+            return new DashboardViewModel
+            {
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = completedAppointments.Count,
+                CancelledAppointments = appointments.Count(a => a.Status == AppointmentStatus.Cancelled),
+                PendingAppointments = appointments.Count(a => a.Status == AppointmentStatus.Pending),
+                ApprovedAppointments = appointments.Count(a => a.Status == AppointmentStatus.Confirmed),
+                InProgressAppointments = appointments.Count(a => a.Status == AppointmentStatus.InProgress),
+                MonthlyRevenue = totalRevenue,
+                TotalRevenue = totalRevenue,
+                CompletionRate = appointments.Count == 0 ? 0 : (double)completedAppointments.Count / appointments.Count * 100,
+                CancellationRate = appointments.Count == 0 ? 0 : (double)appointments.Count(a => a.Status == AppointmentStatus.Cancelled) / appointments.Count * 100,
+                ServiceTypeStatistics = appointments
+                    .Where(a => a.ServiceType != null)
+                    .GroupBy(a => new { a.ServiceTypeId, a.ServiceType!.Name, a.ServiceType.ColorCode })
+                    .Select(g => new ServiceTypeStats
+                    {
+                        ServiceName = g.Key.Name,
+                        AppointmentCount = g.Count(),
+                        TotalRevenue = g.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.ServiceType?.Price ?? 0),
+                        ColorCode = g.Key.ColorCode
+                    })
+                    .OrderByDescending(s => s.AppointmentCount)
+                    .ToList(),
+                TechnicianStatistics = await GetTechnicianStatsAsync(startDate, endDate, status, serviceTypeId, technicianId)
+            };
+        }
+
+        public async Task<List<AppointmentDetailViewModel>> GetReportAppointmentsAsync(DateTime startDate, DateTime endDate, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null)
+        {
+            var appointments = await GetFilteredReportQuery(startDate, endDate, status, serviceTypeId, technicianId)
+                .Include(a => a.User)
+                .Include(a => a.Vehicle)
+                .Include(a => a.ServiceType)
+                .Include(a => a.Technician)
+                .OrderByDescending(a => a.AppointmentDate)
+                .ThenByDescending(a => a.AppointmentTime)
+                .ToListAsync();
+
+            return appointments.Select(a => new AppointmentDetailViewModel
+            {
+                Id = a.Id,
+                AppointmentDate = a.AppointmentDate,
+                AppointmentTime = a.AppointmentTime,
+                Status = a.Status,
+                CustomerNotes = a.CustomerNotes,
+                TechnicianNotes = a.TechnicianNotes,
+                CancellationReason = a.CancellationReason,
+                CreatedAt = a.CreatedAt,
+                ApprovedAt = a.ApprovedAt,
+                CompletedAt = a.CompletedAt,
+                VehicleInfo = a.Vehicle?.VehicleInfo ?? "N/A",
+                ServiceTypeName = a.ServiceType?.Name ?? "N/A",
+                ServicePrice = a.ServiceType?.Price ?? 0,
+                ServiceDuration = a.ServiceType?.FormattedDuration ?? "N/A",
+                TechnicianName = a.Technician?.FullName,
+                CustomerName = a.User?.FullName ?? "N/A",
+                CustomerEmail = a.User?.Email ?? "N/A"
+            }).ToList();
+        }
+
+        public async Task<List<TechnicianStats>> GetTechnicianStatsAsync(DateTime? startDate = null, DateTime? endDate = null, AppointmentStatus? status = null, int? serviceTypeId = null, int? technicianId = null)
+        {
+            var query = _context.Appointments
+                .Include(a => a.Technician)
+                .Include(a => a.ServiceType)
+                .Where(a => a.Technician != null);
+
+            if (startDate.HasValue)
+                query = query.Where(a => a.AppointmentDate >= startDate.Value.Date);
+
+            if (endDate.HasValue)
+                query = query.Where(a => a.AppointmentDate <= endDate.Value.Date);
 
             if (status.HasValue)
                 query = query.Where(a => a.Status == status.Value);
@@ -93,16 +170,17 @@ namespace VehicleServiceApp.Services
             if (technicianId.HasValue)
                 query = query.Where(a => a.TechnicianId == technicianId.Value);
 
-            var appointments = await query.ToListAsync();
-
-            return new DashboardViewModel
-            {
-                TotalAppointments = appointments.Count,
-                CompletedAppointments = appointments.Count(a => a.Status == AppointmentStatus.Completed),
-                CancelledAppointments = appointments.Count(a => a.Status == AppointmentStatus.Cancelled),
-                PendingAppointments = appointments.Count(a => a.Status == AppointmentStatus.Pending),
-                MonthlyRevenue = appointments.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.ServiceType?.Price ?? 0)
-            };
+            return await query
+                .GroupBy(a => new { a.TechnicianId, a.Technician!.FirstName, a.Technician.LastName })
+                .Select(g => new TechnicianStats
+                {
+                    TechnicianName = g.Key.FirstName + " " + g.Key.LastName,
+                    AppointmentCount = g.Count(),
+                    CompletedCount = g.Count(a => a.Status == AppointmentStatus.Completed),
+                    TotalRevenue = g.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.ServiceType != null ? a.ServiceType.Price : 0)
+                })
+                .OrderByDescending(s => s.AppointmentCount)
+                .ToListAsync();
         }
 
         public async Task<List<DailyAppointmentData>> GetLast7DaysDataAsync()
@@ -186,6 +264,23 @@ namespace VehicleServiceApp.Services
                 CustomerName = a.User?.FullName ?? "N/A",
                 CustomerEmail = a.User?.Email ?? "N/A"
             }).ToList();
+        }
+
+        private IQueryable<Appointment> GetFilteredReportQuery(DateTime startDate, DateTime endDate, AppointmentStatus? status, int? serviceTypeId, int? technicianId)
+        {
+            var query = _context.Appointments
+                .Where(a => a.AppointmentDate >= startDate.Date && a.AppointmentDate <= endDate.Date);
+
+            if (status.HasValue)
+                query = query.Where(a => a.Status == status.Value);
+
+            if (serviceTypeId.HasValue)
+                query = query.Where(a => a.ServiceTypeId == serviceTypeId.Value);
+
+            if (technicianId.HasValue)
+                query = query.Where(a => a.TechnicianId == technicianId.Value);
+
+            return query;
         }
 
         private async Task<List<AppointmentDetailViewModel>> GetTodayUpcomingAppointmentsAsync()

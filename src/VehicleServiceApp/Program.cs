@@ -75,6 +75,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IServiceTypeService, ServiceTypeService>();
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAppointmentNotificationService, AppointmentNotificationService>();
 
 // Transient - new instance each time
 builder.Services.AddTransient<IFileService, FileService>();
