@@ -29,27 +29,12 @@ namespace VehicleServiceApp.Areas.Admin.Controllers
         // GET: Admin/Appointments
         public async Task<IActionResult> Index(AppointmentStatus? status, DateTime? dateFrom, DateTime? dateTo, int page = 1)
         {
-            var appointments = await _appointmentService.GetAllAppointmentsAsync();
-
-            // Apply filters
-            if (status.HasValue)
-                appointments = appointments.Where(a => a.Status == status.Value);
-
-            if (dateFrom.HasValue)
-                appointments = appointments.Where(a => a.AppointmentDate >= dateFrom.Value.Date);
-
-            if (dateTo.HasValue)
-                appointments = appointments.Where(a => a.AppointmentDate <= dateTo.Value.Date);
-
-            var totalCount = appointments.Count();
             var pageSize = 15;
-            var pagedAppointments = appointments
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
+            var (appointments, totalCount) = await _appointmentService.GetAllAppointmentsAsync(status, dateFrom, dateTo, page, pageSize);
 
             var viewModel = new AppointmentListViewModel
             {
-                Appointments = pagedAppointments.Select(a => new AppointmentDetailViewModel
+                Appointments = appointments.Select(a => new AppointmentDetailViewModel
                 {
                     Id = a.Id,
                     AppointmentDate = a.AppointmentDate,
@@ -321,6 +306,17 @@ namespace VehicleServiceApp.Areas.Admin.Controllers
             await _appointmentService.AssignTechnicianAsync(id, technicianId);
             TempData["Success"] = "Teknisyen atandı.";
             return RedirectToAction(nameof(Details), new { id });
+        }
+
+        private static bool IsAllowedStatusTransition(AppointmentStatus currentStatus, AppointmentStatus nextStatus)
+        {
+            return currentStatus switch
+            {
+                AppointmentStatus.Pending => nextStatus == AppointmentStatus.Confirmed || nextStatus == AppointmentStatus.Cancelled,
+                AppointmentStatus.Confirmed => nextStatus == AppointmentStatus.InProgress || nextStatus == AppointmentStatus.Cancelled,
+                AppointmentStatus.InProgress => nextStatus == AppointmentStatus.Completed || nextStatus == AppointmentStatus.Cancelled,
+                _ => false
+            };
         }
     }
 }

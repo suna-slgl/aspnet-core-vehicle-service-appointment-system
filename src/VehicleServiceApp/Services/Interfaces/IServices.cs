@@ -25,7 +25,9 @@ namespace VehicleServiceApp.Services.Interfaces
     public interface IAppointmentService
     {
         Task<IEnumerable<Appointment>> GetAllAppointmentsAsync();
+        Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAllAppointmentsAsync(AppointmentStatus? status, DateTime? dateFrom, DateTime? dateTo, int page, int pageSize);
         Task<IEnumerable<Appointment>> GetAppointmentsByUserIdAsync(string userId);
+        Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAppointmentsByUserIdAsync(string userId, AppointmentStatus? status, DateTime? dateFrom, DateTime? dateTo, int page, int pageSize);
         Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status);
         Task<IEnumerable<Appointment>> GetAppointmentsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<IEnumerable<Appointment>> GetTodayAppointmentsAsync();

@@ -37,27 +37,12 @@ namespace VehicleServiceApp.Controllers
         public async Task<IActionResult> Index(AppointmentStatus? status, DateTime? dateFrom, DateTime? dateTo, int page = 1)
         {
             var userId = _userManager.GetUserId(User);
-            var appointments = await _appointmentService.GetAppointmentsByUserIdAsync(userId!);
-
-            // Apply filters
-            if (status.HasValue)
-                appointments = appointments.Where(a => a.Status == status.Value);
-
-            if (dateFrom.HasValue)
-                appointments = appointments.Where(a => a.AppointmentDate >= dateFrom.Value.Date);
-
-            if (dateTo.HasValue)
-                appointments = appointments.Where(a => a.AppointmentDate <= dateTo.Value.Date);
-
-            var totalCount = appointments.Count();
             var pageSize = 10;
-            var pagedAppointments = appointments
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
+            var (appointments, totalCount) = await _appointmentService.GetAppointmentsByUserIdAsync(userId!, status, dateFrom, dateTo, page, pageSize);
 
             var viewModel = new AppointmentListViewModel
             {
-                Appointments = pagedAppointments.Select(a => new AppointmentDetailViewModel
+                Appointments = appointments.Select(a => new AppointmentDetailViewModel
                 {
                     Id = a.Id,
                     AppointmentDate = a.AppointmentDate,
@@ -220,6 +205,9 @@ namespace VehicleServiceApp.Controllers
             // Reload dropdown data
             model.AvailableVehicles = (await _vehicleService.GetVehiclesByUserIdAsync(userId!)).ToList();
             model.AvailableServiceTypes = (await _serviceTypeService.GetActiveServiceTypesAsync()).ToList();
+            model.AvailableTechnicians = TimeSpan.TryParse(model.AppointmentTime, out var selectedTime)
+                ? (await _technicianService.GetAvailableTechniciansAsync(model.AppointmentDate, selectedTime)).ToList()
+                : new List<Technician>();
             model.AvailableTimeSlots = (await _appointmentService.GetAvailableTimeSlotsAsync(model.AppointmentDate)).ToList();
 
             ViewData["Title"] = "Yeni Randevu";

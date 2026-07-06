@@ -29,6 +29,33 @@ namespace VehicleServiceApp.Services
                 .ToListAsync();
         }
 
+        public async Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAllAppointmentsAsync(
+            AppointmentStatus? status,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            int page,
+            int pageSize)
+        {
+            var query = _context.Appointments
+                .Include(a => a.User)
+                .Include(a => a.Vehicle)
+                .Include(a => a.ServiceType)
+                .Include(a => a.Technician)
+                .AsQueryable();
+
+            query = ApplyAppointmentFilters(query, status, dateFrom, dateTo);
+
+            var totalCount = await query.CountAsync();
+            var appointments = await query
+                .OrderByDescending(a => a.AppointmentDate)
+                .ThenByDescending(a => a.AppointmentTime)
+                .Skip((Math.Max(page, 1) - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (appointments, totalCount);
+        }
+
         public async Task<IEnumerable<Appointment>> GetAppointmentsByUserIdAsync(string userId)
         {
             return await _context.Appointments
@@ -39,6 +66,33 @@ namespace VehicleServiceApp.Services
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenByDescending(a => a.AppointmentTime)
                 .ToListAsync();
+        }
+
+        public async Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAppointmentsByUserIdAsync(
+            string userId,
+            AppointmentStatus? status,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            int page,
+            int pageSize)
+        {
+            var query = _context.Appointments
+                .Include(a => a.Vehicle)
+                .Include(a => a.ServiceType)
+                .Include(a => a.Technician)
+                .Where(a => a.UserId == userId);
+
+            query = ApplyAppointmentFilters(query, status, dateFrom, dateTo);
+
+            var totalCount = await query.CountAsync();
+            var appointments = await query
+                .OrderByDescending(a => a.AppointmentDate)
+                .ThenByDescending(a => a.AppointmentTime)
+                .Skip((Math.Max(page, 1) - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (appointments, totalCount);
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status)
@@ -235,6 +289,24 @@ namespace VehicleServiceApp.Services
         {
             return await _context.Appointments
                 .CountAsync(a => a.UserId == userId && a.Status == AppointmentStatus.Completed);
+        }
+
+        private static IQueryable<Appointment> ApplyAppointmentFilters(
+            IQueryable<Appointment> query,
+            AppointmentStatus? status,
+            DateTime? dateFrom,
+            DateTime? dateTo)
+        {
+            if (status.HasValue)
+                query = query.Where(a => a.Status == status.Value);
+
+            if (dateFrom.HasValue)
+                query = query.Where(a => a.AppointmentDate >= dateFrom.Value.Date);
+
+            if (dateTo.HasValue)
+                query = query.Where(a => a.AppointmentDate <= dateTo.Value.Date);
+
+            return query;
         }
     }
 }
